@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.ArrayList;
 
 /**
  * Represents a single chess piece
@@ -10,8 +11,8 @@ import java.util.Collection;
  */
 public class ChessPiece {
 
-    private ChessGame.TeamColor pieceColor;
-    private ChessPiece.PieceType type;
+    private final ChessGame.TeamColor pieceColor;
+    private final ChessPiece.PieceType type;
 
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
         this.pieceColor = pieceColor;
@@ -52,6 +53,99 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        //throw new RuntimeException("Not implemented");
+        if(type == PieceType.KING){
+            return kingMoves(board, myPosition);
+        }
+        else if(type == PieceType.QUEEN){
+            return queenMoves(board, myPosition);
+        }
+        else if(type == PieceType.BISHOP){
+            return bishopMoves(board, myPosition);
+        }
+        else if(type == PieceType.ROOK){
+            return rookMoves(board, myPosition);
+        }
+        else if(type == PieceType.KNIGHT){
+            return knightMoves(board, myPosition);
+        }
+        else{
+            return pawnMoves(board, myPosition);
+        }
+    }
+
+    private boolean checkPositionInBounds(ChessBoard board, ChessPosition myPosition, int moveRow, int moveCol){
+        return myPosition.getRow() + moveRow < 8 || myPosition.getRow() + moveRow > 0 ||
+                myPosition.getColumn() + moveCol < 8 || myPosition.getColumn() + moveCol > 0;
+    }
+
+    private boolean checkPositionEmpty(ChessBoard board, ChessPosition myPosition, int moveRow, int moveCol){
+        if (myPosition.getRow() + moveRow >= 8 || myPosition.getRow() + moveRow < 0 ||
+                myPosition.getColumn() + moveCol >= 8 || myPosition.getColumn() + moveCol < 0) {
+            return false;                // I may want to change this to throwing an error or something later
+        }
+        ChessPosition newPosition = new ChessPosition(myPosition.getRow() + moveRow, myPosition.getColumn() + moveCol);
+        return board.getPiece(newPosition) == null;
+    }
+
+    private Collection<ChessMove> checkDiagonals(ChessBoard board, ChessPosition myPosition, int howFarToCheck){
+        Collection<ChessMove> moves = new ArrayList<>(); // I might need to change this to a collection later
+        for(int i = 0; i <= howFarToCheck; i++){
+            while(checkPositionInBounds(board, myPosition, i, i)){
+                if(checkPositionEmpty(board, myPosition, i, i)){
+                    moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() + i))));
+                }
+            }
+
+        }
+        return moves;
+    }
+
+    private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition){
+         Collection<ChessMove> moves = new ArrayList<>(); // I might need to change this to a collection later
+
+         //check if the space is empty
+        // check if the space is out of bounds
+        return moves;
+    }
+
+    private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> moves = new ArrayList<>(); // I might need to change this to a collection later
+
+        //check if the space is empty
+        // check if the space is out of bounds
+        return moves;
+    }
+
+    private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> moves = new ArrayList<>(); // I might need to change this to a collection later
+
+        //check if the space is empty
+        // check if the space is out of bounds
+        return moves;
+    }
+
+    private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> moves = new ArrayList<>(); // I might need to change this to a collection later
+
+        //check if the space is empty
+        // check if the space is out of bounds
+        return moves;
+    }
+
+    private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> moves = new ArrayList<>(); // I might need to change this to a collection later
+
+        //check if the space is empty
+        // check if the space is out of bounds
+        return moves;
+    }
+
+    private Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition){
+        Collection<ChessMove> moves = new ArrayList<>(); // I might need to change this to a collection later
+
+        //check if the space is empty
+        // check if the space is out of bounds
+        return moves;
     }
 }

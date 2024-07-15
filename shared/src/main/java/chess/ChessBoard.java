@@ -1,5 +1,11 @@
 package chess;
 
+import java.util.Arrays;
+import java.util.Objects;
+
+import static chess.ChessGame.TeamColor;
+import static chess.ChessPiece.PieceType;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -7,9 +13,10 @@ package chess;
  * signature of the existing methods.
  */
 public class ChessBoard {
+    private ChessPiece[][] chessBoard;
 
     public ChessBoard() {
-        
+        chessBoard = new ChessPiece[8][8];
     }
 
     /**
@@ -19,7 +26,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        throw new RuntimeException("Not implemented");
+        chessBoard[position.getColumn()][position.getRow()] = piece;
     }
 
     /**
@@ -30,7 +37,7 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        throw new RuntimeException("Not implemented");
+        return chessBoard[position.getColumn()][position.getRow()];
     }
 
     /**
@@ -38,6 +45,54 @@ public class ChessBoard {
      * (How the game of chess normally starts)
      */
     public void resetBoard() {
-        throw new RuntimeException("Not implemented");
+       chessBoard =  new ChessPiece[8][8];
+       chessBoard[0][0] = new ChessPiece(TeamColor.WHITE, PieceType.ROOK);
+        chessBoard[0][1] = new ChessPiece(TeamColor.WHITE, PieceType.KNIGHT);
+        chessBoard[0][2] = new ChessPiece(TeamColor.WHITE, PieceType.BISHOP);
+        chessBoard[0][3] = new ChessPiece(TeamColor.WHITE, PieceType.QUEEN);
+        chessBoard[0][4] = new ChessPiece(TeamColor.WHITE, PieceType.KING);
+        chessBoard[0][5] = new ChessPiece(TeamColor.WHITE, PieceType.BISHOP);
+        chessBoard[0][6] = new ChessPiece(TeamColor.WHITE, PieceType.KNIGHT);
+        chessBoard[0][7] = new ChessPiece(TeamColor.WHITE, PieceType.ROOK);
+
+        chessBoard[1][0] = new ChessPiece(TeamColor.WHITE, PieceType.PAWN);
+        chessBoard[1][1] = new ChessPiece(TeamColor.WHITE, PieceType.PAWN);
+        chessBoard[1][2] = new ChessPiece(TeamColor.WHITE, PieceType.PAWN);
+        chessBoard[1][3] = new ChessPiece(TeamColor.WHITE, PieceType.PAWN);
+        chessBoard[1][4] = new ChessPiece(TeamColor.WHITE, PieceType.PAWN);
+        chessBoard[1][5] = new ChessPiece(TeamColor.WHITE, PieceType.PAWN);
+        chessBoard[1][6] = new ChessPiece(TeamColor.WHITE, PieceType.PAWN);
+        chessBoard[1][7] = new ChessPiece(TeamColor.WHITE, PieceType.PAWN);
+
+        chessBoard[6][0] = new ChessPiece(TeamColor.BLACK, PieceType.PAWN);
+        chessBoard[6][1] = new ChessPiece(TeamColor.BLACK, PieceType.PAWN);
+        chessBoard[6][2] = new ChessPiece(TeamColor.BLACK, PieceType.PAWN);
+        chessBoard[6][3] = new ChessPiece(TeamColor.BLACK, PieceType.PAWN);
+        chessBoard[6][4] = new ChessPiece(TeamColor.BLACK, PieceType.PAWN);
+        chessBoard[6][5] = new ChessPiece(TeamColor.BLACK, PieceType.PAWN);
+        chessBoard[6][6] = new ChessPiece(TeamColor.BLACK, PieceType.PAWN);
+        chessBoard[6][7] = new ChessPiece(TeamColor.BLACK, PieceType.PAWN);
+
+        chessBoard[7][0] = new ChessPiece(TeamColor.BLACK, PieceType.ROOK);
+        chessBoard[7][1] = new ChessPiece(TeamColor.BLACK, PieceType.KNIGHT);
+        chessBoard[7][2] = new ChessPiece(TeamColor.BLACK, PieceType.BISHOP);
+        chessBoard[7][3] = new ChessPiece(TeamColor.BLACK, PieceType.KING);
+        chessBoard[7][4] = new ChessPiece(TeamColor.BLACK, PieceType.QUEEN);
+        chessBoard[7][5] = new ChessPiece(TeamColor.BLACK, PieceType.BISHOP);
+        chessBoard[7][6] = new ChessPiece(TeamColor.BLACK, PieceType.KNIGHT);
+        chessBoard[7][7] = new ChessPiece(TeamColor.BLACK, PieceType.ROOK);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessBoard that = (ChessBoard) o;
+        return Objects.deepEquals(chessBoard, that.chessBoard);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.deepHashCode(chessBoard);
     }
 }
