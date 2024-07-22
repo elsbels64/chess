@@ -93,8 +93,8 @@ public class ChessPiece {
         for(int i = 0; i <= howFarToCheck; i++){
             if(checkPositionInBounds(board, myPosition, i, i)){
                 if(checkPositionEmpty(board, myPosition, i, i)){
-                    ChessPosition validPosition = new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() + i);
-                    moves.add(new ChessMove(myPosition, validPosition, promotionType));
+                    ChessPosition newPosition = new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() + i);
+                    moves.add(new ChessMove(myPosition, newPosition, promotionType));
                 }
             }
             else{
