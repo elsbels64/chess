@@ -88,15 +88,18 @@ public class ChessPiece {
         return board.getPiece(newPosition) == null;
     }
 
-    private Collection<ChessMove> checkDiagonals(ChessBoard board, ChessPosition myPosition, int howFarToCheck){
+    private Collection<ChessMove> checkDiagonals(ChessBoard board, ChessPosition myPosition, int howFarToCheck, PieceType promotionType){
         Collection<ChessMove> moves = new ArrayList<>(); // I might need to change this to a collection later
         for(int i = 0; i <= howFarToCheck; i++){
-            while(checkPositionInBounds(board, myPosition, i, i)){
+            if(checkPositionInBounds(board, myPosition, i, i)){
                 if(checkPositionEmpty(board, myPosition, i, i)){
-                    moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() + i))));
+                    ChessPosition validPosition = new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() + i);
+                    moves.add(new ChessMove(myPosition, validPosition, promotionType));
                 }
             }
-
+            else{
+                break;
+            }
         }
         return moves;
     }
