@@ -14,9 +14,15 @@ public class ChessMove {
     private ChessPosition endPosition;
     private ChessPiece.PieceType promotionPiece;
 
-    public ChessMove(){
+    public ChessMove() {
         this.startPosition = new ChessPosition();
-        this.endPosition = new ChessPosition(); //automatically sets the point at 1,1
+        this.endPosition = new ChessPosition(); // automatically sets the point at 1,1
+    }
+
+    public ChessMove(ChessPosition startPosition, ChessPosition endPosition) {
+        this.startPosition = startPosition;
+        this.endPosition = endPosition;
+        this.promotionPiece = null; // promotionPiece is optional
     }
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
