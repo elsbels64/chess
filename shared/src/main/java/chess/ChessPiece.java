@@ -79,42 +79,67 @@ public class ChessPiece {
                 myPosition.getColumn() + moveCol < 8 && myPosition.getColumn() + moveCol > 0;
     }
 
-    private boolean checkPositionEmpty(ChessBoard board, ChessPosition myPosition, int moveRow, int moveCol){
+    private String checkPositionPiece(ChessBoard board, ChessPosition myPosition, int moveRow, int moveCol){
         ChessPosition newPosition = new ChessPosition(myPosition.getRow() + moveRow, myPosition.getColumn() + moveCol);
-        return board.getPiece(newPosition) == null;
+        if(board.getPiece(newPosition) == null){
+            return "empty";}
+        if (board.getPiece(newPosition).pieceColor == board.getPiece(myPosition).pieceColor){
+            return "friendly";
+        }
+        else return "enemy";
     }
 
     private Collection<ChessPosition> checkDiagonals(ChessBoard board, ChessPosition myPosition, int howFarToCheck){
         Collection<ChessPosition> viablePositions = new ArrayList<>(); // I might need to change this to a collection later
         for(int i = 0; i <= howFarToCheck; i++){
             if(checkPositionInBounds(myPosition, i, i)){
-                if(checkPositionEmpty(board, myPosition, i, i)){
+                if(checkPositionPiece(board, myPosition, i, i).equals("empty")){
                     viablePositions.add(new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() + i));
                 }
+                else if(checkPositionPiece(board, myPosition, i, i).equals("enemy")){
+                    viablePositions.add(new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() + i));
+                    break;
+                }
+                else {break;}
             }
             else{
                 break;
             }
             if(checkPositionInBounds(myPosition, i, -i)){
-                if(checkPositionEmpty(board, myPosition, i, -i)){
+                if(checkPositionPiece(board, myPosition, i, -i).equals("empty")){
                     viablePositions.add(new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() - i));
                 }
+                else if(checkPositionPiece(board, myPosition, i, -i).equals("enemy")){
+                    viablePositions.add(new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() - i));
+                    break;
+                }
+                else {break;}
             }
             else{
                 break;
             }
             if(checkPositionInBounds(myPosition, -i, i)){
-                if(checkPositionEmpty(board, myPosition, -i, i)){
+                if(checkPositionPiece(board, myPosition, -i, i).equals("empty")){
                     viablePositions.add(new ChessPosition(myPosition.getRow() - i, myPosition.getColumn() + i));
                 }
+                else if(checkPositionPiece(board, myPosition, -i, i).equals("enemy")){
+                    viablePositions.add(new ChessPosition(myPosition.getRow() - i, myPosition.getColumn() + i));
+                    break;
+                }
+                else {break;}
             }
             else{
                 break;
             }
             if(checkPositionInBounds(myPosition, -i, -i)){
-                if(checkPositionEmpty(board, myPosition, -i, -i)){
+                if(checkPositionPiece(board, myPosition, -i, -i).equals("empty")){
                     viablePositions.add(new ChessPosition(myPosition.getRow() - i, myPosition.getColumn() - i));
                 }
+                else if(checkPositionPiece(board, myPosition, -i, -i).equals("enemy")){
+                    viablePositions.add(new ChessPosition(myPosition.getRow() - i, myPosition.getColumn() - i));
+                    break;
+                }
+                else{break;}
             }
             else{
                 break;
@@ -124,44 +149,49 @@ public class ChessPiece {
         return viablePositions;
     }
 
-    private Collection<ChessPosition> checkSides(ChessBoard board, ChessPosition myPosition, int howFarToCheck){
-        Collection<ChessPosition> viablePositions = new ArrayList<>(); // I might need to change this to a collection later
-        for(int i = 0; i <= howFarToCheck; i++){
-            if(checkPositionInBounds(myPosition, 0, i)){
-                if(checkPositionEmpty(board, myPosition, 0, i)){
-                    viablePositions.add(new ChessPosition(myPosition.getRow(), myPosition.getColumn() + i));
-                }
-            }
-            else{
-                break;
-            }
-            if(checkPositionInBounds(myPosition, 0, -i)){
-                if(checkPositionEmpty(board, myPosition, 0, -i)){
-                    viablePositions.add(new ChessPosition(myPosition.getRow(), myPosition.getColumn() - i));
-                }
-            }
-            else{
-                break;
-            }
-            if(checkPositionInBounds(myPosition, i, 0)){
-                if(checkPositionEmpty(board, myPosition, i, 0)){
-                    viablePositions.add(new ChessPosition(myPosition.getRow() + i, myPosition.getColumn()));
-                }
-            }
-            else{
-                break;
-            }
-            if(checkPositionInBounds(myPosition, -i, 0)){
-                if(checkPositionEmpty(board, myPosition, -i, 0)){
-                    viablePositions.add(new ChessPosition(myPosition.getRow() - i, myPosition.getColumn()));
-                }
-            }
-            else{
-                break;
-            }
-        }
-        return viablePositions;
-    }
+//    private Collection<ChessPosition> checkSides(ChessBoard board, ChessPosition myPosition, int howFarToCheck){
+//        Collection<ChessPosition> viablePositions = new ArrayList<>(); // I might need to change this to a collection later
+//        for(int i = 0; i <= howFarToCheck; i++){
+//            if(checkPositionInBounds(myPosition, 0, i)){
+//                if(checkPositionPiece(board, myPosition, 0, i).equals("empty")){
+//                    viablePositions.add(new ChessPosition(myPosition.getRow(), myPosition.getColumn() + i));
+//                }
+//                if(checkPositionPiece(board, myPosition, 0, i).equals("enemy")){
+//                    viablePositions.add(new ChessPosition(myPosition.getRow(), myPosition.getColumn() + i));
+//                    break;
+//                }
+//               else{break;}
+//            }
+//            else{
+//                break;
+//            }
+//            if(checkPositionInBounds(myPosition, 0, -i)){
+//                if(checkPositionEmpty(board, myPosition, 0, -i).equals("empty")){
+//                    viablePositions.add(new ChessPosition(myPosition.getRow(), myPosition.getColumn() - i));
+//                }
+//            }
+//            else{
+//                break;
+//            }
+//            if(checkPositionInBounds(myPosition, i, 0)){
+//                if(checkPositionEmpty(board, myPosition, i, 0).equals("empty")){
+//                    viablePositions.add(new ChessPosition(myPosition.getRow() + i, myPosition.getColumn()));
+//                }
+//            }
+//            else{
+//                break;
+//            }
+//            if(checkPositionInBounds(myPosition, -i, 0)){
+//                if(checkPositionEmpty(board, myPosition, -i, 0).equals("empty")){
+//                    viablePositions.add(new ChessPosition(myPosition.getRow() - i, myPosition.getColumn()));
+//                }
+//            }
+//            else{
+//                break;
+//            }
+//        }
+//        return viablePositions;
+//    }
 
     private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition){
         Collection<ChessMove> moves = new ArrayList<>(); // I might need to change this to a collection later
@@ -170,10 +200,10 @@ public class ChessPiece {
         for(ChessPosition position : viablePositions){
             moves.add(new ChessMove(myPosition, position));
         }
-        viablePositions = checkSides(board, myPosition, 1);
-        for(ChessPosition position : viablePositions){
-            moves.add(new ChessMove(myPosition, position));
-        }
+//        viablePositions = checkSides(board, myPosition, 1);
+//        for(ChessPosition position : viablePositions){
+//            moves.add(new ChessMove(myPosition, position));
+//        }
         return moves;
     }
 
