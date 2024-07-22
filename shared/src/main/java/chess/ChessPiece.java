@@ -75,8 +75,8 @@ public class ChessPiece {
     }
 
     private boolean checkPositionInBounds(ChessPosition myPosition, int moveRow, int moveCol){
-        return myPosition.getRow() + moveRow < 8 || myPosition.getRow() + moveRow > 0 ||
-                myPosition.getColumn() + moveCol < 8 || myPosition.getColumn() + moveCol > 0;
+        return myPosition.getRow() + moveRow < 8 && myPosition.getRow() + moveRow > 0 &&
+                myPosition.getColumn() + moveCol < 8 && myPosition.getColumn() + moveCol > 0;
     }
 
     private boolean checkPositionEmpty(ChessBoard board, ChessPosition myPosition, int moveRow, int moveCol){
@@ -187,9 +187,11 @@ public class ChessPiece {
 
     private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition){
         Collection<ChessMove> moves = new ArrayList<>(); // I might need to change this to a collection later
-
-        //check if the space is empty
-        // check if the space is out of bounds
+        Collection<ChessPosition> viablePositions;
+        viablePositions = checkDiagonals(board, myPosition, 8);
+        for(ChessPosition position : viablePositions){
+            moves.add(new ChessMove(myPosition, position));
+        }
         return moves;
     }
 
