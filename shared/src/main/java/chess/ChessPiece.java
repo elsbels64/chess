@@ -80,19 +80,35 @@ public class ChessPiece {
                 myPosition.getColumn() + moveCol <= 8 && myPosition.getColumn() + moveCol > 0;
     }
 
-    private boolean checkPositionPiece(ChessBoard board, ChessPosition myPosition, int moveRow, int moveCol){
+    private String checkPositionPiece(ChessBoard board, ChessPosition myPosition, int moveRow, int moveCol){
         ChessPosition newPosition = new ChessPosition(myPosition.getRow() + moveRow, myPosition.getColumn() + moveCol);
-        return board.getPiece(newPosition) == null;
+        if(board.getPiece(newPosition) == null){return "empty";}
+        else if (board.getPiece(myPosition).pieceColor==(board.getPiece(newPosition).pieceColor)) {
+            return "friendly";
+        }
+        else{ return "enemy"; }
     }
 
     private Collection<ChessPosition> checkDiagonals(ChessBoard board, ChessPosition myPosition, int howFarToCheck){
         Collection<ChessPosition> viablePositions = new ArrayList<>(); // I might need to change this to a collection later
         int[][] directions = {{1,1},{-1,1},{1,-1},{-1,-1}};
         for(int[] direction : directions){
-            for(int i = 0; i <= howFarToCheck; i++) {
+            for(int i = 1; i <= howFarToCheck; i++) {
                 if (checkPositionInBounds(myPosition, i * direction[0], i * direction[1])) {
-                    if (checkPositionPiece(board, myPosition, i * direction[0], i * direction[1])) {
+                    System.out.println("looking at: " + (myPosition.getRow() + i * direction[0]) + ", " + (myPosition.getColumn() + i * direction[1]));
+                    if (checkPositionPiece(board, myPosition, i * direction[0], i * direction[1]).equals("empty")) {
+                        System.out.println("adding position");
                         viablePositions.add(new ChessPosition(myPosition.getRow() + i * direction[0], myPosition.getColumn() + i * direction[1]));
+                    }
+                    else if (checkPositionPiece(board, myPosition, i * direction[0], i * direction[1]).equals("enemy")){
+                        System.out.println("adding position");
+                        viablePositions.add(new ChessPosition(myPosition.getRow() + i * direction[0], myPosition.getColumn() + i * direction[1]));
+                        System.out.println("break");
+                        break;
+                    }
+                    else{
+                        System.out.println("break");
+                        break;
                     }
                 } else {
                     break;
