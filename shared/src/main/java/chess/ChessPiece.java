@@ -137,6 +137,30 @@ public class ChessPiece {
         return viablePositions;
     }
 
+    private Collection<ChessPosition> checkLs(ChessBoard board, ChessPosition myPosition, int howFarToCheck){
+        Collection<ChessPosition> viablePositions = new ArrayList<>(); // I might need to change this to a collection later
+        int[][] directions = {{2,1},{2,-1},{-2,1},{-2,-1},{1,2},{-1,2},{1,-2},{-1,-2}};
+        for(int[] direction : directions){
+            for(int i = 1; i <= howFarToCheck; i++) {
+                if (checkPositionInBounds(myPosition, i * direction[0], i * direction[1])) {
+                    if (checkPositionPiece(board, myPosition, i * direction[0], i * direction[1]).equals("empty")) {
+                        viablePositions.add(new ChessPosition(myPosition.getRow() + i * direction[0], myPosition.getColumn() + i * direction[1]));
+                    }
+                    else if (checkPositionPiece(board, myPosition, i * direction[0], i * direction[1]).equals("enemy")){
+                        viablePositions.add(new ChessPosition(myPosition.getRow() + i * direction[0], myPosition.getColumn() + i * direction[1]));
+                        break;
+                    }
+                    else{
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+        return viablePositions;
+    }
+
     private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition){
         Collection<ChessMove> moves = new ArrayList<>(); // I might need to change this to a collection later
         Collection<ChessPosition> viablePositions;
@@ -188,9 +212,12 @@ public class ChessPiece {
     }
 
     private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition){
-        Collection<ChessMove> moves = new ArrayList<>();
-        //Check if it's the first move
-
+        Collection<ChessMove> moves = new ArrayList<>(); // I might need to change this to a collection later
+        Collection<ChessPosition> viablePositions;
+        viablePositions = checkLs(board, myPosition, 1);
+        for(ChessPosition position : viablePositions){
+            moves.add(new ChessMove(myPosition, position));
+        }
         return moves;
     }
 
