@@ -89,63 +89,92 @@ public class ChessPiece {
         else return "enemy";
     }
 
-    private Collection<ChessPosition> checkDiagonals(ChessBoard board, ChessPosition myPosition, int howFarToCheck){
-        Collection<ChessPosition> viablePositions = new ArrayList<>(); // I might need to change this to a collection later
-        for(int i = 0; i <= howFarToCheck; i++){
-            if(checkPositionInBounds(myPosition, i, i)){
-                if(checkPositionPiece(board, myPosition, i, i).equals("empty")){
+    private Collection<ChessPosition> checkDiagonals(ChessBoard board, ChessPosition myPosition, int howFarToCheck) {
+        Collection<ChessPosition> viablePositions = new ArrayList<>();
+
+        // Check all four diagonals up to the given distance
+        for (int i = 1; i <= howFarToCheck; i++) {
+            // Diagonal up-right
+            if (checkPositionInBounds(myPosition, i, i)) {
+                System.out.println("reviewing: " + i + " " + i);
+                String piece = checkPositionPiece(board, myPosition, i, i);
+                if (piece.equals("empty")) {
+                    System.out.println("adding: " + i + " " + i);
                     viablePositions.add(new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() + i));
-                }
-                else if(checkPositionPiece(board, myPosition, i, i).equals("enemy")){
+                } else if (piece.equals("enemy")) {
+                    System.out.println("adding: " + i + " " + i);
                     viablePositions.add(new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() + i));
-                    break;
+                    System.out.println("exiting");
+                    break; // Stop if we hit an enemy piece
+                } else {
+                    System.out.println("exiting");
+                    break; // Stop if we hit a piece that is neither empty nor enemy
                 }
-                else {break;}
-            }
-            else{
-                break;
-            }
-            if(checkPositionInBounds(myPosition, i, -i)){
-                if(checkPositionPiece(board, myPosition, i, -i).equals("empty")){
-                    viablePositions.add(new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() - i));
-                }
-                else if(checkPositionPiece(board, myPosition, i, -i).equals("enemy")){
-                    viablePositions.add(new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() - i));
-                    break;
-                }
-                else {break;}
-            }
-            else{
-                break;
-            }
-            if(checkPositionInBounds(myPosition, -i, i)){
-                if(checkPositionPiece(board, myPosition, -i, i).equals("empty")){
-                    viablePositions.add(new ChessPosition(myPosition.getRow() - i, myPosition.getColumn() + i));
-                }
-                else if(checkPositionPiece(board, myPosition, -i, i).equals("enemy")){
-                    viablePositions.add(new ChessPosition(myPosition.getRow() - i, myPosition.getColumn() + i));
-                    break;
-                }
-                else {break;}
-            }
-            else{
-                break;
-            }
-            if(checkPositionInBounds(myPosition, -i, -i)){
-                if(checkPositionPiece(board, myPosition, -i, -i).equals("empty")){
-                    viablePositions.add(new ChessPosition(myPosition.getRow() - i, myPosition.getColumn() - i));
-                }
-                else if(checkPositionPiece(board, myPosition, -i, -i).equals("enemy")){
-                    viablePositions.add(new ChessPosition(myPosition.getRow() - i, myPosition.getColumn() - i));
-                    break;
-                }
-                else{break;}
-            }
-            else{
-                break;
+            } else {
+                break; // Stop if the position is out of bounds
             }
 
+            // Diagonal up-left
+            if (checkPositionInBounds(myPosition, i, -i)) {
+                System.out.println("reviewing: " + i + " " + -i);
+                String piece = checkPositionPiece(board, myPosition, i, -i);
+                if (piece.equals("empty")) {
+                    System.out.println("adding: " + i + " " + -i);
+                    viablePositions.add(new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() - i));
+                } else if (piece.equals("enemy")) {
+                    System.out.println("adding: " + i + " " + -i);
+                    viablePositions.add(new ChessPosition(myPosition.getRow() + i, myPosition.getColumn() - i));
+                    System.out.println("exiting");
+                    break; // Stop if we hit an enemy piece
+                } else {
+                    System.out.println("exiting");
+                    break; // Stop if we hit a piece that is neither empty nor enemy
+                }
+            } else {
+                break; // Stop if the position is out of bounds
+            }
+
+            // Diagonal down-right
+            if (checkPositionInBounds(myPosition, -i, i)) {
+                System.out.println("reviewing: " + -i + " " + i);
+                String piece = checkPositionPiece(board, myPosition, -i, i);
+                if (piece.equals("empty")) {
+                    System.out.println("adding: " + -i + " " + i);
+                    viablePositions.add(new ChessPosition(myPosition.getRow() - i, myPosition.getColumn() + i));
+                } else if (piece.equals("enemy")) {
+                    System.out.println("adding: " + -i + " " + i);
+                    viablePositions.add(new ChessPosition(myPosition.getRow() - i, myPosition.getColumn() + i));
+                    System.out.println("exiting");
+                    break; // Stop if we hit an enemy piece
+                } else {
+                    System.out.println("exiting");
+                    break; // Stop if we hit a piece that is neither empty nor enemy
+                }
+            } else {
+                break; // Stop if the position is out of bounds
+            }
+
+            // Diagonal down-left
+            if (checkPositionInBounds(myPosition, -i, -i)) {
+                System.out.println("reviewing: " + -i + " " + -i);
+                String piece = checkPositionPiece(board, myPosition, -i, -i);
+                if (piece.equals("empty")) {
+                    System.out.println("adding: " + -i + " " + -i);
+                    viablePositions.add(new ChessPosition(myPosition.getRow() - i, myPosition.getColumn() - i));
+                } else if (piece.equals("enemy")) {
+                    System.out.println("adding: " + -i + " " + -i);
+                    viablePositions.add(new ChessPosition(myPosition.getRow() - i, myPosition.getColumn() - i));
+                    System.out.println("exiting");
+                    break;
+                } else {
+                    System.out.println("exiting");
+                    break; // Stop if we hit a piece that is neither empty nor enemy
+                }
+            } else {
+                break; // Stop if the position is out of bounds
+            }
         }
+
         return viablePositions;
     }
 
