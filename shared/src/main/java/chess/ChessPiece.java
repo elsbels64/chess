@@ -76,8 +76,8 @@ public class ChessPiece {
     }
 
     private boolean checkPositionInBounds(ChessPosition myPosition, int moveRow, int moveCol){
-        return myPosition.getRow() + moveRow < 8 && myPosition.getRow() + moveRow > 0 &&
-                myPosition.getColumn() + moveCol < 8 && myPosition.getColumn() + moveCol > 0;
+        return myPosition.getRow() + moveRow <= 8 && myPosition.getRow() + moveRow > 0 &&
+                myPosition.getColumn() + moveCol <= 8 && myPosition.getColumn() + moveCol > 0;
     }
 
     private boolean checkPositionPiece(ChessBoard board, ChessPosition myPosition, int moveRow, int moveCol){
