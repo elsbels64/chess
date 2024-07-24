@@ -176,6 +176,7 @@ public class ChessPiece {
                 moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow()+ direction,myPosition.getColumn()-1),PieceType.BISHOP));
                 moves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow()+ direction,myPosition.getColumn()-1),PieceType.QUEEN));
             }
+            return moves;
         }
 
         for(int i = 0; i < 1; i++){
