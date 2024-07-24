@@ -1,7 +1,6 @@
 package chess;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 import static chess.ChessGame.TeamColor;
 import static chess.ChessPiece.PieceType;
@@ -76,21 +75,6 @@ public class ChessBoard {
             chessBoard[i][6] = new ChessPiece(TeamColor.BLACK, PieceType.PAWN);
         }
     }
-
-//    private void printBoard() {
-//        for (int row = 0; row < 8; row++) {
-//            for (int col = 0; col < 8; col++) {
-//                ChessPiece piece = chessBoard[col][row];
-//                if (piece != null) {
-//                    System.out.print(piece.getTeamColor().toString().charAt(0));
-//                    System.out.print(piece.getPieceType().toString().charAt(0) + " ");
-//                } else {
-//                    System.out.print("-- ");
-//                }
-//            }
-//            System.out.println();
-//        }
-//    }
 
     @Override
     public boolean equals(Object o) {
