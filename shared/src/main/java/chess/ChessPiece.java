@@ -116,21 +116,21 @@ public class ChessPiece {
     }
 
     private Collection<ChessMove> kingMoves(ChessBoard board, ChessPosition myPosition){
-        Collection<ChessMove> moves = new ArrayList<>(); // I might need to change this to a collection later
+        Collection<ChessMove> moves; // I might need to change this to a collection later
         moves = checkDirections(board, myPosition, diagonals,  1);
         moves.addAll(checkDirections(board, myPosition, sides,  1));
         return moves;
     }
 
     private Collection<ChessMove> queenMoves(ChessBoard board, ChessPosition myPosition){
-        Collection<ChessMove> moves = new ArrayList<>(); // I might need to change this to a collection later
+        Collection<ChessMove> moves; // I might need to change this to a collection later
         moves = checkDirections(board, myPosition, diagonals,  8);
         moves.addAll(checkDirections(board, myPosition, sides,  8));
         return moves;
     }
 
     private Collection<ChessMove> bishopMoves(ChessBoard board, ChessPosition myPosition){
-        Collection<ChessMove> moves = new ArrayList<>(); // I might need to change this to a collection later
+        Collection<ChessMove> moves; // I might need to change this to a collection later
         moves = checkDirections(board, myPosition, diagonals,  8);
         return moves;
     }
@@ -138,13 +138,13 @@ public class ChessPiece {
 
 
     private Collection<ChessMove> rookMoves(ChessBoard board, ChessPosition myPosition){
-        Collection<ChessMove> moves = new ArrayList<>(); // I might need to change this to a collection later
+        Collection<ChessMove> moves; // I might need to change this to a collection later
         moves = checkDirections(board, myPosition, sides,  8);
         return moves;
     }
 
     private Collection<ChessMove> knightMoves(ChessBoard board, ChessPosition myPosition){
-        Collection<ChessMove> moves = new ArrayList<>(); // I might need to change this to a collection later
+        Collection<ChessMove> moves; // I might need to change this to a collection later
         moves = checkDirections(board, myPosition, Ls,  1);
         return moves;
     }
