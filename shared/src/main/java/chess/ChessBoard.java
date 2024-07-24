@@ -26,7 +26,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        chessBoard[position.getColumn()-1][position.getRow()-1] = piece;
+        chessBoard[(position.getColumn()-1)][(position.getRow()-1)] = piece;
     }
 
     /**
@@ -37,7 +37,10 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return chessBoard[position.getColumn()-1][position.getRow()-1];
+        if (position.getRow() <= 0 || position.getRow() > 8 || position.getColumn() <= 0 || position.getColumn() > 8) {
+            throw new IndexOutOfBoundsException("Index out of bounds: cannot access: " + (position.getRow()) + ", " + (position.getColumn()));
+        }
+        return chessBoard[(position.getColumn()-1)][(position.getRow()-1)];
     }
 
     /**
@@ -71,6 +74,24 @@ public class ChessBoard {
 
         for (int i = 0; i < 8; i++) {
             chessBoard[6][i] = new ChessPiece(TeamColor.BLACK, PieceType.PAWN);
+        }
+
+        // Debug print to check board state
+        printBoard();
+    }
+
+    private void printBoard() {
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                ChessPiece piece = chessBoard[row][col];
+                if (piece != null) {
+                    System.out.print(piece.getTeamColor().toString().charAt(0));
+                    System.out.print(piece.getPieceType().toString().charAt(0) + " ");
+                } else {
+                    System.out.print("-- ");
+                }
+            }
+            System.out.println();
         }
     }
 
