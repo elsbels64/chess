@@ -51,49 +51,46 @@ public class ChessBoard {
         chessBoard = new ChessPiece[8][8];
 
         chessBoard[0][0] = new ChessPiece(TeamColor.WHITE, PieceType.ROOK);
-        chessBoard[0][1] = new ChessPiece(TeamColor.WHITE, PieceType.KNIGHT);
-        chessBoard[0][2] = new ChessPiece(TeamColor.WHITE, PieceType.BISHOP);
-        chessBoard[0][3] = new ChessPiece(TeamColor.WHITE, PieceType.QUEEN);
-        chessBoard[0][4] = new ChessPiece(TeamColor.WHITE, PieceType.KING);
-        chessBoard[0][5] = new ChessPiece(TeamColor.WHITE, PieceType.BISHOP);
-        chessBoard[0][6] = new ChessPiece(TeamColor.WHITE, PieceType.KNIGHT);
-        chessBoard[0][7] = new ChessPiece(TeamColor.WHITE, PieceType.ROOK);
+        chessBoard[1][0] = new ChessPiece(TeamColor.WHITE, PieceType.KNIGHT);
+        chessBoard[2][0] = new ChessPiece(TeamColor.WHITE, PieceType.BISHOP);
+        chessBoard[3][0] = new ChessPiece(TeamColor.WHITE, PieceType.QUEEN);
+        chessBoard[4][0] = new ChessPiece(TeamColor.WHITE, PieceType.KING);
+        chessBoard[5][0] = new ChessPiece(TeamColor.WHITE, PieceType.BISHOP);
+        chessBoard[6][0] = new ChessPiece(TeamColor.WHITE, PieceType.KNIGHT);
+        chessBoard[7][0] = new ChessPiece(TeamColor.WHITE, PieceType.ROOK);
 
         for (int i = 0; i < 8; i++) {
-            chessBoard[1][i] = new ChessPiece(TeamColor.WHITE, PieceType.PAWN);
+            chessBoard[i][1] = new ChessPiece(TeamColor.WHITE, PieceType.PAWN);
         }
 
-        chessBoard[7][0] = new ChessPiece(TeamColor.BLACK, PieceType.ROOK);
-        chessBoard[7][1] = new ChessPiece(TeamColor.BLACK, PieceType.KNIGHT);
-        chessBoard[7][2] = new ChessPiece(TeamColor.BLACK, PieceType.BISHOP);
-        chessBoard[7][3] = new ChessPiece(TeamColor.BLACK, PieceType.QUEEN);
-        chessBoard[7][4] = new ChessPiece(TeamColor.BLACK, PieceType.KING);
-        chessBoard[7][5] = new ChessPiece(TeamColor.BLACK, PieceType.BISHOP);
-        chessBoard[7][6] = new ChessPiece(TeamColor.BLACK, PieceType.KNIGHT);
+        chessBoard[0][7] = new ChessPiece(TeamColor.BLACK, PieceType.ROOK);
+        chessBoard[1][7] = new ChessPiece(TeamColor.BLACK, PieceType.KNIGHT);
+        chessBoard[2][7] = new ChessPiece(TeamColor.BLACK, PieceType.BISHOP);
+        chessBoard[3][7] = new ChessPiece(TeamColor.BLACK, PieceType.QUEEN);
+        chessBoard[4][7] = new ChessPiece(TeamColor.BLACK, PieceType.KING);
+        chessBoard[5][7] = new ChessPiece(TeamColor.BLACK, PieceType.BISHOP);
+        chessBoard[6][7] = new ChessPiece(TeamColor.BLACK, PieceType.KNIGHT);
         chessBoard[7][7] = new ChessPiece(TeamColor.BLACK, PieceType.ROOK);
 
         for (int i = 0; i < 8; i++) {
-            chessBoard[6][i] = new ChessPiece(TeamColor.BLACK, PieceType.PAWN);
-        }
-
-        // Debug print to check board state
-        printBoard();
-    }
-
-    private void printBoard() {
-        for (int row = 0; row < 8; row++) {
-            for (int col = 0; col < 8; col++) {
-                ChessPiece piece = chessBoard[row][col];
-                if (piece != null) {
-                    System.out.print(piece.getTeamColor().toString().charAt(0));
-                    System.out.print(piece.getPieceType().toString().charAt(0) + " ");
-                } else {
-                    System.out.print("-- ");
-                }
-            }
-            System.out.println();
+            chessBoard[i][6] = new ChessPiece(TeamColor.BLACK, PieceType.PAWN);
         }
     }
+
+//    private void printBoard() {
+//        for (int row = 0; row < 8; row++) {
+//            for (int col = 0; col < 8; col++) {
+//                ChessPiece piece = chessBoard[col][row];
+//                if (piece != null) {
+//                    System.out.print(piece.getTeamColor().toString().charAt(0));
+//                    System.out.print(piece.getPieceType().toString().charAt(0) + " ");
+//                } else {
+//                    System.out.print("-- ");
+//                }
+//            }
+//            System.out.println();
+//        }
+//    }
 
     @Override
     public boolean equals(Object o) {
