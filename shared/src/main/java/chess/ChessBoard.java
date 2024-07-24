@@ -26,7 +26,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        chessBoard[(position.getColumn()-1)][(position.getRow()-1)] = piece;
+        chessBoard[(position.getColumn())][(position.getRow())] = piece;
     }
 
     /**
@@ -37,10 +37,10 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        if (position.getRow() <= 0 || position.getRow() > 8 || position.getColumn() <= 0 || position.getColumn() > 8) {
+        if (position.getRow() < 0 || position.getRow() >= 8 || position.getColumn() < 0 || position.getColumn() >= 8) {
             throw new IndexOutOfBoundsException("Index out of bounds: cannot access: " + (position.getRow()) + ", " + (position.getColumn()));
         }
-        return chessBoard[(position.getColumn()-1)][(position.getRow()-1)];
+        return chessBoard[(position.getColumn())][(position.getRow())];
     }
 
     /**
