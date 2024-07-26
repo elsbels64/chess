@@ -1,5 +1,6 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -10,10 +11,10 @@ import java.util.Collection;
  */
 public class ChessGame {
 
-        private TeamColor teamTurn;
-        private ChessBoard board;
-        private Collection<ChessPosition> whitePositions;// there might be problems with removing from this list later
-        private Collection<ChessPosition> blackPositions;
+    private TeamColor teamTurn;
+    private ChessBoard board;
+    private Collection<ChessPosition> whitePositions;// there might be problems with removing from this list later
+    private Collection<ChessPosition> blackPositions;
 
 
     public ChessGame() {
@@ -21,6 +22,8 @@ public class ChessGame {
         teamTurn = TeamColor.WHITE;
         board = new ChessBoard();
         board.resetBoard();
+        whitePositions = new ArrayList<>();
+        blackPositions = new ArrayList<>();
         for(int i = 1; i < 3; i++){ // these might cause problems later
             for(int j = 1; j < 9; j++){
                 whitePositions.add(new ChessPosition(i, j));
