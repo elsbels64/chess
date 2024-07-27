@@ -69,7 +69,18 @@ public class ChessGame {
         //add enpasant and castling
 
         //remove moves that leave the king exposed/incheck
-
+        for(ChessMove move : validMoves){
+            var newGame = new ChessGame();
+            newGame.setBoard(board);
+            try {
+                newGame.makeMove(move);
+            } catch (InvalidMoveException e) {
+                throw new RuntimeException(e);
+            }
+            if(newGame.isInCheck(piece.getTeamColor())){
+                validMoves.remove(move);
+            }
+        }
         return validMoves;
     }
 
@@ -117,7 +128,7 @@ public class ChessGame {
         board.updateColorPositionsAndKings();
         if(teamColor==TeamColor.WHITE){
             for(ChessPosition position : board.blackPositions){
-                Collection<ChessMove> pieceMoves = validMoves(position);
+                Collection<ChessMove> pieceMoves= board.getPiece(position).pieceMoves(board, position);
                 for(ChessMove move : pieceMoves){
                     if(move.getEndPosition().equals(board.whiteKing)){
                         return true;
@@ -127,7 +138,7 @@ public class ChessGame {
         }
         if(teamColor==TeamColor.BLACK){
             for(ChessPosition position : board.whitePositions){
-                Collection<ChessMove> pieceMoves = validMoves(position);
+                Collection<ChessMove> pieceMoves= board.getPiece(position).pieceMoves(board, position);
                 for(ChessMove move : pieceMoves){
                     if(move.getEndPosition().equals(board.blackKing)){
                         return true;
@@ -145,7 +156,31 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+//        board.updateColorPositionsAndKings();
+//        if(teamColor==TeamColor.WHITE){
+//            for(ChessPosition position : board.blackPositions){
+//                Collection<ChessMove> pieceMoves = validMoves(position);
+//                for(ChessMove move : pieceMoves){
+//                    var newGame = new ChessGame();
+//                    newGame.setBoard(board);
+//                    newGame.makeMove(move);
+//                    if(!newGame.isInCheck(teamColor.WHITE)){
+//                        return false;
+//                    }
+//                }
+//            }
+//        }
+//        if(teamColor==TeamColor.BLACK){
+//            for(ChessPosition position : board.whitePositions){
+//                Collection<ChessMove> pieceMoves = validMoves(position);
+//                for(ChessMove move : pieceMoves){
+//                    if(move.getEndPosition().equals(board.blackKing)){
+//                        return true;
+//                    }
+//                }
+//            }
+//        }
+        return true;
     }
 
     /**
