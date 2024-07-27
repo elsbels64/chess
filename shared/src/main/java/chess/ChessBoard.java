@@ -1,6 +1,8 @@
 package chess;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 import static chess.ChessGame.TeamColor;
 import static chess.ChessPiece.PieceType;
@@ -13,6 +15,10 @@ import static chess.ChessPiece.PieceType;
  */
 public class ChessBoard {
     private ChessPiece[][] chessBoard;
+    Collection<ChessPosition> blackPositions;
+    Collection<ChessPosition> whitePositions;
+    ChessPosition blackKing;
+    ChessPosition whiteKing;
 
     public ChessBoard() {
         chessBoard = new ChessPiece[8][8];
@@ -73,6 +79,28 @@ public class ChessBoard {
 
         for (int i = 0; i < 8; i++) {
             chessBoard[i][6] = new ChessPiece(TeamColor.BLACK, PieceType.PAWN);
+        }
+    }
+
+    public void updateColorPositionsAndKings(){
+        blackPositions = new ArrayList<>();
+        whitePositions = new ArrayList<>();
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
+                if(chessBoard[i][j] != null){
+                    if(chessBoard[i][j].getTeamColor()==TeamColor.WHITE){
+                        whitePositions.add(new ChessPosition(j + 1 ,i + 1 ));
+                        if(chessBoard[i][j].getPieceType()==PieceType.KING){
+                            whiteKing = new ChessPosition(j + 1 ,i + 1);
+                        }
+                    }else{
+                        blackPositions.add(new ChessPosition(j + 1 ,i + 1));
+                        if(chessBoard[i][j].getPieceType()==PieceType.KING){
+                            blackKing = new ChessPosition(j + 1 ,i + 1);
+                        }
+                    }
+                }
+            }
         }
     }
 

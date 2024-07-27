@@ -13,10 +13,6 @@ public class ChessGame {
 
     private TeamColor teamTurn;
     private ChessBoard board;
-    private Collection<ChessPosition> whitePositions;// there might be problems with removing from this list later
-    private Collection<ChessPosition> blackPositions;
-    private ChessPosition whiteKing;
-    private ChessPosition blackKing;
     private Collection<ChessPosition> doubleMovePawns;
     private Collection<ChessPosition> unmovedRooksAndKings;
 
@@ -27,20 +23,8 @@ public class ChessGame {
         teamTurn = TeamColor.WHITE;
         board = new ChessBoard();
         board.resetBoard();
-        whitePositions = new ArrayList<>();
-        blackPositions = new ArrayList<>();
         doubleMovePawns = new ArrayList<>();
         unmovedRooksAndKings = new ArrayList<>();
-        for(int i = 1; i < 3; i++){ // these might cause problems later
-            for(int j = 1; j < 9; j++){
-                whitePositions.add(new ChessPosition(i, j));
-            }
-        }
-        for(int i = 1; i < 3; i++){
-            for(int j = 1; j < 9; j++){
-                blackPositions.add(new ChessPosition(i, j));
-            }
-        }
     }
 
     /**
@@ -109,14 +93,6 @@ public class ChessGame {
         if(move.getPromotionPiece()!=null){ // promote the piece if necessary
             movingPiece = new ChessPiece(movingPiece.getTeamColor(), move.getPromotionPiece());
         }
-        //update the white and black positions
-        if(movingPiece.getTeamColor()==TeamColor.WHITE){
-            whitePositions.remove(move.getStartPosition());
-            whitePositions.add(move.getEndPosition());
-        } else {
-            blackPositions.remove(move.getStartPosition());
-            blackPositions.add(move.getEndPosition());
-        }
         //update the unmoved rooks and kings list if it is a king or a rook that is moving for the first time
         if(movingPiece.getPieceType()== ChessPiece.PieceType.KING || movingPiece.getPieceType()== ChessPiece.PieceType.ROOK && unmovedRooksAndKings.contains(move.getStartPosition())){
             unmovedRooksAndKings.remove(move.getStartPosition());
@@ -138,19 +114,27 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-
-
+        board.updateColorPositionsAndKings();
         if(teamColor==TeamColor.WHITE){
-            for(ChessPosition position : blackPositions){
+            for(ChessPosition position : board.blackPositions){
                 Collection<ChessMove> pieceMoves = validMoves(position);
                 for(ChessMove move : pieceMoves){
-                    if(move.getEndPosition()==whiteKing){
+                    if(move.getEndPosition().equals(board.whiteKing)){
                         return true;
                     }
                 }
             }
         }
-
+        if(teamColor==TeamColor.BLACK){
+            for(ChessPosition position : board.whitePositions){
+                Collection<ChessMove> pieceMoves = validMoves(position);
+                for(ChessMove move : pieceMoves){
+                    if(move.getEndPosition().equals(board.blackKing)){
+                        return true;
+                    }
+                }
+            }
+        }
         return false;
     }
 
