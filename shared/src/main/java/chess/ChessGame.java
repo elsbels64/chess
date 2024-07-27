@@ -15,6 +15,11 @@ public class ChessGame {
     private ChessBoard board;
     private Collection<ChessPosition> whitePositions;// there might be problems with removing from this list later
     private Collection<ChessPosition> blackPositions;
+    private ChessPosition whiteKing;
+    private ChessPosition blackKing;
+    private Collection<ChessPosition> doubleMovePawns;
+    private Collection<ChessPosition> unmovedRooksAndKings;
+
 
 
     public ChessGame() {
@@ -24,6 +29,8 @@ public class ChessGame {
         board.resetBoard();
         whitePositions = new ArrayList<>();
         blackPositions = new ArrayList<>();
+        doubleMovePawns = new ArrayList<>();
+        unmovedRooksAndKings = new ArrayList<>();
         for(int i = 1; i < 3; i++){ // these might cause problems later
             for(int j = 1; j < 9; j++){
                 whitePositions.add(new ChessPosition(i, j));
@@ -68,7 +75,18 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece= board.getPiece(startPosition);
+        if(piece==null){
+            return null;
+        }
+//        if (isInCheck(board.getPiece(startPosition).getTeamColor())){
+//            if(!(piece.getPieceType() == ChessPiece.PieceType.KING)){return null;}}
+        Collection<ChessMove> validMoves = piece.pieceMoves(board, startPosition);
+        //add enpasant and castling
+
+        //remove moves that leave the king exposed/incheck
+
+        return validMoves;
     }
 
     /**
@@ -78,9 +96,39 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
+        if(board.getPiece(move.getStartPosition())== null){
+            throw new InvalidMoveException("Move not valid");
+        }
         if (!validMoves(move.getStartPosition()).contains(move)) {
             throw new InvalidMoveException("Move not valid");
         }
+        if(board.getPiece(move.getStartPosition()).getTeamColor()!=teamTurn){
+            throw new InvalidMoveException("Move not valid");
+        }
+        ChessPiece movingPiece = board.getPiece(move.getStartPosition());;
+        if(move.getPromotionPiece()!=null){ // promote the piece if necessary
+            movingPiece = new ChessPiece(movingPiece.getTeamColor(), move.getPromotionPiece());
+        }
+        //update the white and black positions
+        if(movingPiece.getTeamColor()==TeamColor.WHITE){
+            whitePositions.remove(move.getStartPosition());
+            whitePositions.add(move.getEndPosition());
+        } else {
+            blackPositions.remove(move.getStartPosition());
+            blackPositions.add(move.getEndPosition());
+        }
+        //update the unmoved rooks and kings list if it is a king or a rook that is moving for the first time
+        if(movingPiece.getPieceType()== ChessPiece.PieceType.KING || movingPiece.getPieceType()== ChessPiece.PieceType.ROOK && unmovedRooksAndKings.contains(move.getStartPosition())){
+            unmovedRooksAndKings.remove(move.getStartPosition());
+        }
+        //find some way to update pawn for enpasant
+
+        board.addPiece(move.getStartPosition(), null);//empty where the piece was
+        board.addPiece(move.getEndPosition(), movingPiece); //put the piece in its new position
+        //update whose turn it is///////////////////////////////////////////////////////////////////////////////
+        if(teamTurn == TeamColor.WHITE){
+            teamTurn = TeamColor.BLACK;
+        }else{teamTurn = TeamColor.WHITE;}
     }
 
     /**
@@ -90,7 +138,20 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+
+
+        if(teamColor==TeamColor.WHITE){
+            for(ChessPosition position : blackPositions){
+                Collection<ChessMove> pieceMoves = validMoves(position);
+                for(ChessMove move : pieceMoves){
+                    if(move.getEndPosition()==whiteKing){
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
