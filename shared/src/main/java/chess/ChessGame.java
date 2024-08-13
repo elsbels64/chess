@@ -133,26 +133,21 @@ public class ChessGame {
      */
     public boolean isInCheck(TeamColor teamColor) {
         board.updateColorPositionsAndKings();
-        if(teamColor==TeamColor.WHITE){
-            for(ChessPosition position : board.blackPositions){
-                Collection<ChessMove> pieceMoves= board.getPiece(position).pieceMoves(board, position);
-                for(ChessMove move : pieceMoves){
-                    if(move.getEndPosition().equals(board.whiteKing)){
-                        return true;
-                    }
+        ChessPosition kingPosition = (teamColor == TeamColor.WHITE) ? board.whiteKing : board.blackKing;
+        Collection<ChessPosition> opponentPositions = (teamColor == TeamColor.WHITE) ? board.blackPositions : board.whitePositions;
+
+        for (ChessPosition position : opponentPositions) {
+            ChessPiece piece = board.getPiece(position);
+            Collection<ChessMove> pieceMoves = piece.pieceMoves(board, position);
+
+            // Check if any move of the piece can reach the king's position
+            for (ChessMove move : pieceMoves) {
+                if (move.getEndPosition().equals(kingPosition)) {
+                    return true; // King is in check
                 }
             }
         }
-        if(teamColor==TeamColor.BLACK){
-            for(ChessPosition position : board.whitePositions){
-                Collection<ChessMove> pieceMoves= board.getPiece(position).pieceMoves(board, position);
-                for(ChessMove move : pieceMoves){
-                    if(move.getEndPosition().equals(board.blackKing)){
-                        return true;
-                    }
-                }
-            }
-        }
+
         return false;
     }
 
