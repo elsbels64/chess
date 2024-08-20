@@ -13,7 +13,7 @@ public class ChessGame {
 
     private TeamColor teamTurn;
     private ChessBoard board;
-    private Collection<ChessPosition> doubleMovePawns;
+    private ChessPosition doubleMovePawn;
     private Collection<ChessPosition> unmovedRooksAndKings;
 
 
@@ -23,7 +23,6 @@ public class ChessGame {
         teamTurn = TeamColor.WHITE;
         board = new ChessBoard();
         board.resetBoard();
-        doubleMovePawns = new ArrayList<>();
         unmovedRooksAndKings = new ArrayList<>();
     }
 
@@ -64,7 +63,28 @@ public class ChessGame {
             return null;
         }
         Collection<ChessMove> validMoves = piece.pieceMoves(board, startPosition);
-        //add enpasant and castling
+        //enpasant
+        if(piece.getPieceType() == ChessPiece.PieceType.PAWN){
+            ChessPosition checkEnpasantLeft;
+            ChessPosition checkEnpasantRight;
+
+            if(piece.getTeamColor()== TeamColor.WHITE) {
+                checkEnpasantLeft = new ChessPosition(startPosition.getRow() + 1 , startPosition.getColumn() - 1);
+                checkEnpasantRight = new ChessPosition(startPosition.getRow() + 1 , startPosition.getColumn() + 1);
+            }
+            else{
+                checkEnpasantLeft = new ChessPosition(startPosition.getRow() - 1 , startPosition.getColumn() - 1);
+                checkEnpasantRight = new ChessPosition(startPosition.getRow() - 1 , startPosition.getColumn() + 1);
+            }
+
+            if(checkEnpasantLeft.equals(doubleMovePawn) || checkEnpasantRight.equals(doubleMovePawn)){
+                validMoves.add(new ChessMove(startPosition, doubleMovePawn));
+            }
+        }
+
+
+        //castling
+
 
 //        remove moves that leave the king exposed/incheck
         Collection<ChessMove> toRemove = new ArrayList<>();;
@@ -121,7 +141,26 @@ public class ChessGame {
         if(movingPiece.getPieceType()== ChessPiece.PieceType.KING || movingPiece.getPieceType()== ChessPiece.PieceType.ROOK && unmovedRooksAndKings.contains(move.getStartPosition())){
             unmovedRooksAndKings.remove(move.getStartPosition());
         }
+
         //find some way to update pawn for enpasant
+        if(movingPiece.getPieceType()== ChessPiece.PieceType.PAWN){
+            if(move.getEndPosition().getRow()-move.getStartPosition().getRow()>1){
+                doubleMovePawn = new ChessPosition(move.getEndPosition().getRow()-1,move.getEndPosition().getColumn());
+            }
+            else if(move.getEndPosition().getRow()-move.getStartPosition().getRow()<-1){
+                doubleMovePawn = new ChessPosition(move.getEndPosition().getRow()+1,move.getEndPosition().getColumn());
+            }
+            else{
+                // if you aren't moving a pawn double then you are missing your chance for enpasant so double move pawn should be cleared out
+                doubleMovePawn = null;
+            }
+        }
+        else{
+            // if you aren't moving a pawn double then you are missing your chance for enpasant so double move pawn should be cleared out
+            doubleMovePawn = null;
+        }
+
+
 
         board.addPiece(move.getStartPosition(), null);//empty where the piece was
         board.addPiece(move.getEndPosition(), movingPiece); //put the piece in its new position
