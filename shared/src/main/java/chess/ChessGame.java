@@ -71,16 +71,16 @@ public class ChessGame {
 
             if(checkEnPassantLeft.equals(doubleMovePawn) ) {
                 if (piece.getTeamColor() == TeamColor.WHITE) {
-                    validMoves.add(new ChessMove(startPosition, new ChessPosition(checkEnPassantLeft.getRow() + 1, checkEnPassantLeft.getColumn()), null, "EnPassant", doubleMovePawn));
+                    validMoves.add(new ChessMove(startPosition, new ChessPosition(checkEnPassantLeft.getRow() + 1, checkEnPassantLeft.getColumn())));
                 }else{
-                    validMoves.add(new ChessMove(startPosition, new ChessPosition(checkEnPassantLeft.getRow() - 1, checkEnPassantLeft.getColumn()), null, "EnPassant", doubleMovePawn));
+                    validMoves.add(new ChessMove(startPosition, new ChessPosition(checkEnPassantLeft.getRow() - 1, checkEnPassantLeft.getColumn())));
                 }
             }
             else if (checkEnPassantRight.equals(doubleMovePawn)){
                 if (piece.getTeamColor() == TeamColor.WHITE) {
-                    validMoves.add(new ChessMove(startPosition, new ChessPosition(checkEnPassantRight.getRow() + 1, checkEnPassantRight.getColumn()), null, "EnPassant", doubleMovePawn));
+                    validMoves.add(new ChessMove(startPosition, new ChessPosition(checkEnPassantRight.getRow() + 1, checkEnPassantRight.getColumn())));
                 }else{
-                    validMoves.add(new ChessMove(startPosition, new ChessPosition(checkEnPassantRight.getRow() - 1, checkEnPassantRight.getColumn()), null, "EnPassant", doubleMovePawn));
+                    validMoves.add(new ChessMove(startPosition, new ChessPosition(checkEnPassantRight.getRow() - 1, checkEnPassantRight.getColumn())));
                 }
             }
         }
@@ -140,10 +140,14 @@ public class ChessGame {
 
         //find some way to update pawn for EnPassant
         if(movingPiece.getPieceType()== ChessPiece.PieceType.PAWN){
-            if(move.getEndPosition().getRow()-move.getStartPosition().getRow()>1){
-                doubleMovePawn = move.getEndPosition();
+            ChessPosition checkEnPassantLeft = new ChessPosition(move.getStartPosition().getRow(), move.getStartPosition().getColumn() - 1);
+            ChessPosition checkEnPassantRight = new ChessPosition(move.getStartPosition().getRow(), move.getStartPosition().getColumn() + 1);
+
+            if(checkEnPassantLeft.equals(doubleMovePawn) || checkEnPassantRight.equals(doubleMovePawn)){
+                board.addPiece(doubleMovePawn, null);
+                doubleMovePawn = null;
             }
-            else if(move.getEndPosition().getRow()-move.getStartPosition().getRow()<-1){
+            else if (Math.abs(move.getEndPosition().getRow() - move.getStartPosition().getRow()) > 1) {
                 doubleMovePawn = move.getEndPosition();
             }
             else{
@@ -156,13 +160,7 @@ public class ChessGame {
             doubleMovePawn = null;
         }
 
-        if(move.getSpecialMoveType().equals("EnPassant")){
-            board.addPiece(move.getStartPosition(), null);//empty where the piece was
-            board.addPiece(move.getEndPosition(), movingPiece);
-            board.addPiece(move.getOtherPiecePositionInSpecialMove(), null);
-
-        }
-        else if(move.getSpecialMoveType().equals("Castling")){
+        if(move.getSpecialMoveType().equals("Castling")){
             throw new RuntimeException("Castling is Not implemented yet.");
         }
         else{
@@ -170,6 +168,8 @@ public class ChessGame {
             board.addPiece(move.getStartPosition(), null);//empty where the piece was
             board.addPiece(move.getEndPosition(), movingPiece); //put the piece in its new position
         }
+
+        board.printBoard();
 
         //update whose turn it is///////////////////////////////////////////////////////////////////////////////
         if(teamTurn == TeamColor.WHITE){
@@ -281,7 +281,4 @@ public class ChessGame {
     public ChessBoard getBoard() {
         return board;
     }
-
-
-
 }
