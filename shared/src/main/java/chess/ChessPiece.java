@@ -97,10 +97,12 @@ public class ChessPiece {
         for(int[] direction : directions){
             for(int i = 1; i <= howFarToCheck; i++) {
                 if (checkPositionInBounds(myPosition, i * direction[0], i * direction[1])) {
-                    if (checkPositionPiece(board, myPosition, i * direction[0], i * direction[1]).equals("empty")) {
+                    String positionStatus = checkPositionPiece(board, myPosition, i * direction[0], i * direction[1]);
+
+                    if (positionStatus.equals("empty")) {
                         viableMoves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + i * direction[0], myPosition.getColumn() + i * direction[1])));
                     }
-                    else if (checkPositionPiece(board, myPosition, i * direction[0], i * direction[1]).equals("enemy")){
+                    else if (positionStatus.equals("enemy")){
                         viableMoves.add(new ChessMove(myPosition, new ChessPosition(myPosition.getRow() + i * direction[0], myPosition.getColumn() + i * direction[1])));
                         break;
                     }

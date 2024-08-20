@@ -24,6 +24,32 @@ public class ChessBoard {
         chessBoard = new ChessPiece[8][8];
     }
 
+    public ChessBoard(ChessBoard other) {
+        // Initialize a new chess board array
+        this.chessBoard = new ChessPiece[8][8];
+
+        // Copy each piece from the original board to the new board
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                if (other.chessBoard[i][j] != null) {
+                    this.chessBoard[i][j] = new ChessPiece(other.chessBoard[i][j]);
+                }
+            }
+        }
+
+        // Deep copy of the positions collections
+        this.blackPositions = new ArrayList<>(other.blackPositions);
+        this.whitePositions = new ArrayList<>(other.whitePositions);
+
+        // Copy the positions of the kings
+        if (other.blackKing != null) {
+            this.blackKing = new ChessPosition(other.blackKing.getRow(), other.blackKing.getColumn());
+        }
+        if (other.whiteKing != null) {
+            this.whiteKing = new ChessPosition(other.whiteKing.getRow(), other.whiteKing.getColumn());
+        }
+    }
+
     /**
      * Adds a chess piece to the chessboard
      *
@@ -101,6 +127,25 @@ public class ChessBoard {
                     }
                 }
             }
+        }
+    }
+
+    public void printBoard() {
+        for (int row = 7; row >= 0; row--) {
+            StringBuilder sb = new StringBuilder();
+            for (int col = 0; col < 8; col++) {
+                sb.append("|");
+                ChessPiece piece = chessBoard[col][row];
+                if (piece == null) {
+                    sb.append(" ");
+                } else {
+                    char symbol = piece.getTeamColor() == TeamColor.WHITE ? Character.toUpperCase(piece.getPieceType().toString().charAt(0))
+                            : Character.toLowerCase(piece.getPieceType().toString().charAt(0));
+                    sb.append(symbol);
+                }
+            }
+            sb.append("|");
+            System.out.println(sb.toString());
         }
     }
 

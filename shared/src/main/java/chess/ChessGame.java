@@ -72,10 +72,18 @@ public class ChessGame {
             var newGame = new ChessGame();
             newGame.setBoard(board);
             newGame.makeTestMove(move, piece);
+            System.out.println();
+            System.out.println("testing " + piece.getPieceType() + " to " + move.getEndPosition().getRow() + ", " + move.getEndPosition().getColumn());
+            newGame.board.printBoard();
 
             if(newGame.isInCheck(piece.getTeamColor())){
+                System.out.print("removing: " + move.getEndPosition().getRow() + ", " + move.getEndPosition().getColumn() + ";   ");
                 toRemove.add(move);
             }
+            else{
+                System.out.print("keeping: " + move.getEndPosition().getRow() + ", " + move.getEndPosition().getColumn() + ";   ");
+            }
+            newGame = null;
         }
         validMoves.removeAll(toRemove);
 
@@ -138,11 +146,14 @@ public class ChessGame {
 
         for (ChessPosition position : opponentPositions) {
             ChessPiece piece = board.getPiece(position);
+            System.out.println("Inspecting oponent: " + piece.getPieceType() + " -at: " + position.getRow() + ", " + position.getColumn());
             Collection<ChessMove> pieceMoves = piece.pieceMoves(board, position);
 
             // Check if any move of the piece can reach the king's position
             for (ChessMove move : pieceMoves) {
+                System.out.println("Move being considered: " + move.getEndPosition().getRow() + ", " + move.getEndPosition().getColumn());
                 if (move.getEndPosition().equals(kingPosition)) {
+                    System.out.println("King is in check by: " + piece.getPieceType() + " from position: " + position.getRow() + ", " + position.getColumn());
                     return true; // King is in check
                 }
             }
@@ -172,6 +183,8 @@ public class ChessGame {
         throw new RuntimeException("Not implemented");
     }
 
+
+
     /**
      * Sets this game's chessboard with a given board
      *
@@ -189,4 +202,7 @@ public class ChessGame {
     public ChessBoard getBoard() {
         return board;
     }
+
+
+
 }
