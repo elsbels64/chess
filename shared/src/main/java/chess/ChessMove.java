@@ -13,16 +13,21 @@ public class ChessMove {
     private ChessPosition startPosition;
     private ChessPosition endPosition;
     private ChessPiece.PieceType promotionPiece;
+    private String specialMoveType;
+    private ChessPosition otherPiecePositionInSpecialMove;
 
     public ChessMove() {
         this.startPosition = new ChessPosition();
         this.endPosition = new ChessPosition(); // automatically sets the point at 1,1
+        this.specialMoveType = "Normal";
     }
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition) {
         this.startPosition = startPosition;
         this.endPosition = endPosition;
         this.promotionPiece = null; // promotionPiece is optional
+        this.specialMoveType = "Normal";
+        this.otherPiecePositionInSpecialMove = null;
     }
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
@@ -30,6 +35,25 @@ public class ChessMove {
         this.startPosition = startPosition;
         this.endPosition = endPosition;
         this.promotionPiece = promotionPiece;
+        this.specialMoveType = "Normal";
+        this.otherPiecePositionInSpecialMove = null;
+    }
+
+    public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
+                     ChessPiece.PieceType promotionPiece, String specialMoveType, ChessPosition otherPiecePositionInSpecialMove) {
+        this.startPosition = startPosition;
+        this.endPosition = endPosition;
+        this.promotionPiece = promotionPiece;
+        this.specialMoveType = specialMoveType;
+        this.otherPiecePositionInSpecialMove = otherPiecePositionInSpecialMove;
+    }
+
+    public String getSpecialMoveType() {
+        return specialMoveType;
+    }
+
+    public ChessPosition getOtherPiecePositionInSpecialMove() {
+        return otherPiecePositionInSpecialMove;
     }
 
     /**

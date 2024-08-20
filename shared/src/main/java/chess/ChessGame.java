@@ -63,24 +63,27 @@ public class ChessGame {
             return null;
         }
         Collection<ChessMove> validMoves = piece.pieceMoves(board, startPosition);
-        //enpasant
-        if(piece.getPieceType() == ChessPiece.PieceType.PAWN){
-            ChessPosition checkEnpasantLeft;
-            ChessPosition checkEnpasantRight;
-            if(piece.getTeamColor()== TeamColor.WHITE) {
-                checkEnpasantLeft = new ChessPosition(startPosition.getRow() + 1 , startPosition.getColumn() - 1);
-                checkEnpasantRight = new ChessPosition(startPosition.getRow() + 1 , startPosition.getColumn() + 1);
-            }
-            else{
-                checkEnpasantLeft = new ChessPosition(startPosition.getRow() - 1 , startPosition.getColumn() - 1);
-                checkEnpasantRight = new ChessPosition(startPosition.getRow() - 1 , startPosition.getColumn() + 1);
-            }
 
-            if(checkEnpasantLeft.equals(doubleMovePawn) || checkEnpasantRight.equals(doubleMovePawn)){
-                validMoves.add(new ChessMove(startPosition, doubleMovePawn));
+        //EnPassant
+        if(piece.getPieceType() == ChessPiece.PieceType.PAWN){
+            ChessPosition checkEnPassantLeft = new ChessPosition(startPosition.getRow(), startPosition.getColumn() - 1);
+            ChessPosition checkEnPassantRight = new ChessPosition(startPosition.getRow(), startPosition.getColumn() + 1);
+
+            if(checkEnPassantLeft.equals(doubleMovePawn) ) {
+                if (piece.getTeamColor() == TeamColor.WHITE) {
+                    validMoves.add(new ChessMove(startPosition, new ChessPosition(checkEnPassantLeft.getRow() + 1, checkEnPassantLeft.getColumn()), null, "EnPassant", doubleMovePawn));
+                }else{
+                    validMoves.add(new ChessMove(startPosition, new ChessPosition(checkEnPassantLeft.getRow() - 1, checkEnPassantLeft.getColumn()), null, "EnPassant", doubleMovePawn));
+                }
+            }
+            else if (checkEnPassantRight.equals(doubleMovePawn)){
+                if (piece.getTeamColor() == TeamColor.WHITE) {
+                    validMoves.add(new ChessMove(startPosition, new ChessPosition(checkEnPassantRight.getRow() + 1, checkEnPassantRight.getColumn()), null, "EnPassant", doubleMovePawn));
+                }else{
+                    validMoves.add(new ChessMove(startPosition, new ChessPosition(checkEnPassantRight.getRow() - 1, checkEnPassantRight.getColumn()), null, "EnPassant", doubleMovePawn));
+                }
             }
         }
-
 
         //castling
 
@@ -92,26 +95,20 @@ public class ChessGame {
             newGame.setBoard(new ChessBoard(this.board));
             newGame.makeTestMove(move, piece);
 
-//            System.out.println();
-//            System.out.println("testing " + piece.getPieceType() + " to " + move.getEndPosition().getRow() + ", " + move.getEndPosition().getColumn());
-//            newGame.board.printBoard();
-
             if(newGame.isInCheck(piece.getTeamColor())){
-//                System.out.print("removing: " + move.getEndPosition().getRow() + ", " + move.getEndPosition().getColumn() + ";   ");
-
                 toRemove.add(move);
             }
         }
         validMoves.removeAll(toRemove);
-
-//        for(ChessMove move: validMoves){
-//            System.out.print(move.getEndPosition().getRow() + ", " + move.getEndPosition().getColumn() + ";   ");
-//        }
-
         return validMoves;
     }
 
     private void makeTestMove(ChessMove move, ChessPiece piece) {
+        if(move.getSpecialMoveType().equals("EnPassant")){
+            board.addPiece(move.getStartPosition(), null);//empty where the piece was
+            board.addPiece(move.getEndPosition(), piece);
+            board.addPiece(move.getOtherPiecePositionInSpecialMove(), null);
+        }
         board.addPiece(move.getStartPosition(), null);//empty where the piece was
         board.addPiece(move.getEndPosition(), piece); //put the piece in its new position
     }
@@ -141,28 +138,39 @@ public class ChessGame {
             unmovedRooksAndKings.remove(move.getStartPosition());
         }
 
-        //find some way to update pawn for enpasant
+        //find some way to update pawn for EnPassant
         if(movingPiece.getPieceType()== ChessPiece.PieceType.PAWN){
             if(move.getEndPosition().getRow()-move.getStartPosition().getRow()>1){
-                doubleMovePawn = new ChessPosition(move.getEndPosition().getRow()-1,move.getEndPosition().getColumn());
+                doubleMovePawn = move.getEndPosition();
             }
             else if(move.getEndPosition().getRow()-move.getStartPosition().getRow()<-1){
-                doubleMovePawn = new ChessPosition(move.getEndPosition().getRow()+1,move.getEndPosition().getColumn());
+                doubleMovePawn = move.getEndPosition();
             }
             else{
-                // if you aren't moving a pawn double then you are missing your chance for enpasant so double move pawn should be cleared out
+                // if you aren't moving a pawn double then you are missing your chance for EnPassant so double move pawn should be cleared out
                 doubleMovePawn = null;
             }
         }
         else{
-            // if you aren't moving a pawn double then you are missing your chance for enpasant so double move pawn should be cleared out
+            // if you aren't moving a pawn double then you are missing your chance for EnPassant so double move pawn should be cleared out
             doubleMovePawn = null;
         }
 
+        if(move.getSpecialMoveType().equals("EnPassant")){
+            board.addPiece(move.getStartPosition(), null);//empty where the piece was
+            board.addPiece(move.getEndPosition(), movingPiece);
+            board.addPiece(move.getOtherPiecePositionInSpecialMove(), null);
 
+        }
+        else if(move.getSpecialMoveType().equals("Castling")){
+            throw new RuntimeException("Castling is Not implemented yet.");
+        }
+        else{
+            //it's a normal move
+            board.addPiece(move.getStartPosition(), null);//empty where the piece was
+            board.addPiece(move.getEndPosition(), movingPiece); //put the piece in its new position
+        }
 
-        board.addPiece(move.getStartPosition(), null);//empty where the piece was
-        board.addPiece(move.getEndPosition(), movingPiece); //put the piece in its new position
         //update whose turn it is///////////////////////////////////////////////////////////////////////////////
         if(teamTurn == TeamColor.WHITE){
             teamTurn = TeamColor.BLACK;
