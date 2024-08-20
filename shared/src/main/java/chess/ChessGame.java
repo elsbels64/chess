@@ -70,20 +70,21 @@ public class ChessGame {
         Collection<ChessMove> toRemove = new ArrayList<>();;
         for(ChessMove move : validMoves){
             var newGame = new ChessGame();
-            newGame.setBoard(board);
+            newGame.setBoard(new ChessBoard(this.board));
             newGame.makeTestMove(move, piece);
+
             System.out.println();
             System.out.println("testing " + piece.getPieceType() + " to " + move.getEndPosition().getRow() + ", " + move.getEndPosition().getColumn());
             newGame.board.printBoard();
 
             if(newGame.isInCheck(piece.getTeamColor())){
                 System.out.print("removing: " + move.getEndPosition().getRow() + ", " + move.getEndPosition().getColumn() + ";   ");
+
                 toRemove.add(move);
             }
             else{
                 System.out.print("keeping: " + move.getEndPosition().getRow() + ", " + move.getEndPosition().getColumn() + ";   ");
             }
-            newGame = null;
         }
         validMoves.removeAll(toRemove);
 

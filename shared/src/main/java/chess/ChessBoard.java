@@ -32,21 +32,10 @@ public class ChessBoard {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 if (other.chessBoard[i][j] != null) {
-                    this.chessBoard[i][j] = new ChessPiece(other.chessBoard[i][j]);
+                    ChessPiece originalPiece = other.chessBoard[i][j];
+                    this.chessBoard[i][j] = new ChessPiece(originalPiece.getTeamColor(), originalPiece.getPieceType());
                 }
             }
-        }
-
-        // Deep copy of the positions collections
-        this.blackPositions = new ArrayList<>(other.blackPositions);
-        this.whitePositions = new ArrayList<>(other.whitePositions);
-
-        // Copy the positions of the kings
-        if (other.blackKing != null) {
-            this.blackKing = new ChessPosition(other.blackKing.getRow(), other.blackKing.getColumn());
-        }
-        if (other.whiteKing != null) {
-            this.whiteKing = new ChessPosition(other.whiteKing.getRow(), other.whiteKing.getColumn());
         }
     }
 
