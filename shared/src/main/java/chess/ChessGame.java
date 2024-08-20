@@ -67,7 +67,6 @@ public class ChessGame {
         if(piece.getPieceType() == ChessPiece.PieceType.PAWN){
             ChessPosition checkEnpasantLeft;
             ChessPosition checkEnpasantRight;
-
             if(piece.getTeamColor()== TeamColor.WHITE) {
                 checkEnpasantLeft = new ChessPosition(startPosition.getRow() + 1 , startPosition.getColumn() - 1);
                 checkEnpasantRight = new ChessPosition(startPosition.getRow() + 1 , startPosition.getColumn() + 1);
