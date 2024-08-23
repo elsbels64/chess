@@ -126,7 +126,8 @@ public class ChessGame {
                         System.out.println("Rook of the same color at: " + position.getColumn() + ", " + position.getRow());
                         if(checkEmptyBetweenPiecesHorizontally(startPosition, position)){ // no pieces blocking
                             System.out.println("there are no pieces between those two");
-                            ChessMove castling = testCastlingResult(position, startPosition);
+                            ChessMove castling = testCastlingMove(position, startPosition);
+                            System.out.println("result of testCastling: " + castling);
                             if(castling!=null){ // doesn't result in checkmate or rook being in danger
                                 System.out.println("Castling does not put either move in danger");
                                 validMoves.add(castling);
@@ -138,10 +139,16 @@ public class ChessGame {
             else if(piece.getPieceType()== ChessPiece.PieceType.ROOK && unmovedRooks.contains(startPosition)) {
                 ChessPosition kingPosition = new ChessPosition(startPosition.getRow(), 5);
                 if(unmovedKings.contains(kingPosition)){
-                    if(checkEmptyBetweenPiecesHorizontally(startPosition, kingPosition)){ // no pieces blocking
-                        ChessMove castling = testCastlingResult(startPosition, kingPosition);
-                        if(castling!=null){ // doesn't result in checkmate or rook being in danger
-                            validMoves.add(castling);
+                    if(board.getPiece(kingPosition).getTeamColor()== piece.getTeamColor()){ // only look at rooks of the same color
+                        System.out.println("king of the same color at: " + kingPosition.getColumn() + ", " + kingPosition.getRow());
+                        if(checkEmptyBetweenPiecesHorizontally(startPosition, kingPosition)){ // no pieces blocking
+                            System.out.println("there are no pieces between those two");
+                            ChessMove castling = testCastlingMove(kingPosition, startPosition);
+                            System.out.println("result of testCastling: " + castling);
+                            if(castling!=null){ // doesn't result in checkmate or rook being in danger
+                                System.out.println("Castling does not put either move in danger");
+                                validMoves.add(castling);
+                            }
                         }
                     }
                 }
@@ -194,7 +201,7 @@ public class ChessGame {
         return true;
     }
 
-    private ChessMove testCastlingResult(ChessPosition rookPosition,  ChessPosition kingPosition){
+    private ChessMove testCastlingMove(ChessPosition rookPosition,  ChessPosition kingPosition){
         var newGame = new ChessGame();
         newGame.setBoard(new ChessBoard(this.board));
         ChessPiece rook = newGame.board.getPiece(rookPosition);
@@ -203,18 +210,21 @@ public class ChessGame {
         ChessMove kingMove;
         if(rookPosition.getColumn()==8){
             rookMove = new ChessMove(rookPosition, new ChessPosition(rookPosition.getRow(), 6));
-            kingMove = new ChessMove(rookPosition, new ChessPosition(rookPosition.getRow(), 7));
+            kingMove = new ChessMove(kingPosition, new ChessPosition(rookPosition.getRow(), 7));
         }
         else{
             rookMove = new ChessMove(rookPosition, new ChessPosition(rookPosition.getRow(), 4));
-            kingMove = new ChessMove(rookPosition, new ChessPosition(rookPosition.getRow(), 3));
+            kingMove = new ChessMove(kingPosition, new ChessPosition(rookPosition.getRow(), 3));
         }
         newGame.makeTestMove(rookMove, rook);
         newGame.makeTestMove(kingMove, king);
+        newGame.board.printBoard();
         if(newGame.isInCheck(king.getTeamColor())){
+            System.out.println("the color" + king.getTeamColor() + " is in check");
             return null;
         }
-        if(newGame.pieceSafe(rook.getTeamColor(), rookMove.getEndPosition())){
+        if(!newGame.pieceSafe(rook.getTeamColor(), rookMove.getEndPosition())){
+            System.out.println("the rook at" + rookMove.getEndPosition().getRow() + ", " + rookMove.getEndPosition().getColumn() + " is in danger");
             return null;
         }
         return kingMove;
@@ -254,13 +264,13 @@ public class ChessGame {
         if(movingPiece.getPieceType()== ChessPiece.PieceType.KING && unmovedKings.contains(move.getStartPosition())){
             unmovedKings.remove(move.getStartPosition());
             if(move.getEndPosition().getColumn()==3){//we know it's castling now because the king wouldn't be able to move that far from the starting position otherwise
-                ChessPiece rook = board.getPiece(new ChessPosition(move.getEndPosition().getRow(), 4));
+                ChessPiece rook = board.getPiece(new ChessPosition(move.getEndPosition().getRow(), 1));
                 board.addPiece(new ChessPosition(move.getEndPosition().getRow(), 1), null);
                 board.addPiece(new ChessPosition(move.getEndPosition().getRow(), 4), rook);
 
             }
             else if(move.getEndPosition().getColumn()==7){
-                ChessPiece rook = board.getPiece(new ChessPosition(move.getEndPosition().getRow(), 4));
+                ChessPiece rook = board.getPiece(new ChessPosition(move.getEndPosition().getRow(), 8));
                 board.addPiece(new ChessPosition(move.getEndPosition().getRow(), 8), null);
                 board.addPiece(new ChessPosition(move.getEndPosition().getRow(), 6), rook);
             }
