@@ -32,7 +32,6 @@ public class ChessGame {
         unmovedRooks.add(new ChessPosition(1, 8)); // Black Rook
         unmovedKings.add(new ChessPosition(1, 5)); // Black King
         unmovedKings.add(new ChessPosition(8, 5)); // White King
-        System.out.println(unmovedKings);
     }
 
     /**
@@ -108,26 +107,27 @@ public class ChessGame {
 
         //castling
         if(!isInCheck(piece.getTeamColor())){
-            System.out.println(piece.getTeamColor() + " is not in check");
-            System.out.println(unmovedKings);
-            System.out.println("unmoved kings contains piece: " + unmovedKings.contains(startPosition));
-            for(ChessPosition position : unmovedKings){
-                System.out.print(position.getRow() + ", " + position.getColumn()+ "; ");
-            }
-            System.out.println();
-            System.out.println("unmoved rooks: ");
-            for(ChessPosition position : unmovedRooks){
-                System.out.print(position.getRow() + ", " + position.getColumn() + "; ");
-            }
+//            System.out.println(piece.getTeamColor() + " is not in check");
+//            System.out.println(unmovedKings);
+//            System.out.println("unmoved kings contains piece: " + unmovedKings.contains(startPosition));
+//            for(ChessPosition position : unmovedKings){
+//                System.out.print(position.getRow() + ", " + position.getColumn()+ "; ");
+//            }
+//            System.out.println();
+//            System.out.println("unmoved rooks: ");
+//            for(ChessPosition position : unmovedRooks){
+//                System.out.print(position.getRow() + ", " + position.getColumn() + "; ");
+//            }
             if(piece.getPieceType()== ChessPiece.PieceType.KING && unmovedKings.contains(startPosition)) {
+                System.out.println();
                 System.out.println("Piece is a king and is in unmoved kings");
                 for (ChessPosition position : unmovedRooks) {
                     if(board.getPiece(position).getTeamColor()== piece.getTeamColor()){ // only look at rooks of the same color
+                        System.out.println();
                         System.out.println("Rook of the same color at: " + position.getColumn() + ", " + position.getRow());
                         if(checkEmptyBetweenPiecesHorizontally(startPosition, position)){ // no pieces blocking
                             System.out.println("there are no pieces between those two");
                             ChessMove castling = testCastlingMove(position, startPosition);
-                            System.out.println("result of testCastling: " + castling);
                             if(castling!=null){ // doesn't result in checkmate or rook being in danger
                                 System.out.println("Castling does not put either move in danger");
                                 validMoves.add(castling);
@@ -137,6 +137,8 @@ public class ChessGame {
                 }
             }
             else if(piece.getPieceType()== ChessPiece.PieceType.ROOK && unmovedRooks.contains(startPosition)) {
+                System.out.println();
+                System.out.println("looking at rook castling move");
                 ChessPosition kingPosition = new ChessPosition(startPosition.getRow(), 5);
                 if(unmovedKings.contains(kingPosition)){
                     if(board.getPiece(kingPosition).getTeamColor()== piece.getTeamColor()){ // only look at rooks of the same color
@@ -192,7 +194,16 @@ public class ChessGame {
         }
     }
 
-    private boolean checkEmptyBetweenPiecesHorizontally(ChessPosition startPosition, ChessPosition endPosition){
+    private boolean checkEmptyBetweenPiecesHorizontally(ChessPosition position1, ChessPosition position2){
+        ChessPosition startPosition;
+        ChessPosition endPosition;
+        if(position1.getColumn() < position2.getColumn()){
+            startPosition = position1;
+            endPosition = position2;
+        }else{
+            startPosition = position2;
+            endPosition = position1;
+        }
         for(int i = startPosition.getColumn() + 1; i < endPosition.getColumn() ; i++){
             if(board.getPiece(new ChessPosition(startPosition.getRow(), i)) != null){
                 return false;
@@ -218,7 +229,6 @@ public class ChessGame {
         }
         newGame.makeTestMove(rookMove, rook);
         newGame.makeTestMove(kingMove, king);
-        newGame.board.printBoard();
         if(newGame.isInCheck(king.getTeamColor())){
             System.out.println("the color" + king.getTeamColor() + " is in check");
             return null;
@@ -251,7 +261,7 @@ public class ChessGame {
             throw new InvalidMoveException("Move not valid. No piece there.");
         }
         if (!validMoves(move.getStartPosition()).contains(move)) {
-            throw new InvalidMoveException("Move not valid");
+            throw new InvalidMoveException("Move: " + move.getStartPosition().getRow() + ", " + move.getStartPosition().getColumn() + " to " + move.getEndPosition().getRow() + ", " + move.getEndPosition().getColumn() + " not valid");
         }
         if(board.getPiece(move.getStartPosition()).getTeamColor()!=teamTurn){
             throw new InvalidMoveException("Move not valid. Not the teams turn.");
