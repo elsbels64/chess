@@ -20,7 +20,6 @@ public class ChessGame {
 
 
     public ChessGame() {
-//        System.out.println("creating chess board");
         teamTurn = TeamColor.WHITE;
         board = new ChessBoard();
         board.resetBoard();
@@ -116,7 +115,7 @@ public class ChessGame {
             System.out.println();
             System.out.println("unmoved rooks: ");
             for(ChessPosition position : unmovedRooks){
-                System.out.print(position.getRow() + ", " + position.getColumn() + "; ");
+                System.out.print(position.toString() + "; ");
             }
             if(piece.getPieceType()== ChessPiece.PieceType.KING && unmovedKings.contains(startPosition)) {
                 System.out.println();
@@ -124,7 +123,7 @@ public class ChessGame {
                 for (ChessPosition position : unmovedRooks) {
                     if(board.getPiece(position).getTeamColor()== piece.getTeamColor()){ // only look at rooks of the same color
                         System.out.println();
-                        System.out.println("Rook of the same color at: " + position.getColumn() + ", " + position.getRow());
+                        System.out.println("Rook of the same color at: " + position);
                         if(checkEmptyBetweenPiecesHorizontally(startPosition, position)){ // no pieces blocking
                             System.out.println("there are no pieces between those two");
                             ChessMove castling = testCastlingMove(position, startPosition);
@@ -142,7 +141,7 @@ public class ChessGame {
                 ChessPosition kingPosition = new ChessPosition(startPosition.getRow(), 5);
                 if(unmovedKings.contains(kingPosition)){
                     if(board.getPiece(kingPosition).getTeamColor()== piece.getTeamColor()){ // only look at rooks of the same color
-                        System.out.println("king of the same color at: " + kingPosition.getColumn() + ", " + kingPosition.getRow());
+                        System.out.println("king of the same color at: " + kingPosition);
                         if(checkEmptyBetweenPiecesHorizontally(startPosition, kingPosition)){ // no pieces blocking
                             System.out.println("there are no pieces between those two");
                             ChessMove castling = testCastlingMove(kingPosition, startPosition);
@@ -234,7 +233,7 @@ public class ChessGame {
             return null;
         }
         if(!newGame.pieceSafe(rook.getTeamColor(), rookMove.getEndPosition())){
-            System.out.println("the rook at" + rookMove.getEndPosition().getRow() + ", " + rookMove.getEndPosition().getColumn() + " is in danger");
+            System.out.println("the rook at" + rookMove.getEndPosition() + " is in danger");
             return null;
         }
         return kingMove;
@@ -311,9 +310,9 @@ public class ChessGame {
             //it's a normal move
         board.addPiece(move.getStartPosition(), null);//empty where the piece was
         board.addPiece(move.getEndPosition(), movingPiece); //put the piece in its new position
-//
+
         board.printBoard();
-//
+
         //update whose turn it is///////////////////////////////////////////////////////////////////////////////
         if(teamTurn == TeamColor.WHITE){
             teamTurn = TeamColor.BLACK;
@@ -412,7 +411,6 @@ public class ChessGame {
      */
     public void setBoard(ChessBoard board) {
         this.board=board;
-        updateRooksAndKings();
     }
 
     /**
