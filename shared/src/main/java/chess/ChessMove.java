@@ -71,6 +71,14 @@ public class ChessMove {
     }
 
     @Override
+    public String toString() {
+        return "ChessMove{" + startPosition +
+                " to " + endPosition +
+                ", promotionPiece=" + promotionPiece +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

@@ -107,17 +107,17 @@ public class ChessGame {
 
         //castling
         if(!isInCheck(piece.getTeamColor())){
-//            System.out.println(piece.getTeamColor() + " is not in check");
-//            System.out.println(unmovedKings);
-//            System.out.println("unmoved kings contains piece: " + unmovedKings.contains(startPosition));
-//            for(ChessPosition position : unmovedKings){
-//                System.out.print(position.getRow() + ", " + position.getColumn()+ "; ");
-//            }
-//            System.out.println();
-//            System.out.println("unmoved rooks: ");
-//            for(ChessPosition position : unmovedRooks){
-//                System.out.print(position.getRow() + ", " + position.getColumn() + "; ");
-//            }
+            System.out.println(piece.getTeamColor() + " is not in check");
+            System.out.println(unmovedKings);
+            System.out.println("unmoved kings contains piece: " + unmovedKings.contains(startPosition));
+            for(ChessPosition position : unmovedKings){
+                System.out.print(position.getRow() + ", " + position.getColumn()+ "; ");
+            }
+            System.out.println();
+            System.out.println("unmoved rooks: ");
+            for(ChessPosition position : unmovedRooks){
+                System.out.print(position.getRow() + ", " + position.getColumn() + "; ");
+            }
             if(piece.getPieceType()== ChessPiece.PieceType.KING && unmovedKings.contains(startPosition)) {
                 System.out.println();
                 System.out.println("Piece is a king and is in unmoved kings");
