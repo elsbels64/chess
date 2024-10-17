@@ -139,8 +139,9 @@ public class ChessBoard {
                 if (getPiece(new ChessPosition(row, col)) == null) {
                     boardString.append(" ");
                 } else {
-                    Character piece = getPiece(new ChessPosition(row, col)).getTeamColor() == ChessGame.TeamColor.WHITE ? Character.toUpperCase(TYPE_TO_CHAR_MAP.get(((getPiece(new ChessPosition(row, col))).getPieceType()))) :
-                            Character.toLowerCase(TYPE_TO_CHAR_MAP.get(((getPiece(new ChessPosition(row, col))).getPieceType())));
+                    Character piece = getPiece(new ChessPosition(row, col)).getTeamColor() == ChessGame.TeamColor.WHITE
+                            ? Character.toUpperCase(TYPE_TO_CHAR_MAP.get(getPiece(new ChessPosition(row, col)).getPieceType()))
+                            : Character.toLowerCase(TYPE_TO_CHAR_MAP.get(getPiece(new ChessPosition(row, col)).getPieceType()));
                     boardString.append(piece);
                 }
             }

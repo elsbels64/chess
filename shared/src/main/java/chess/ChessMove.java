@@ -10,24 +10,15 @@ import java.util.Objects;
  */
 public class ChessMove {
     // use rectange example
-    private ChessPosition startPosition;
-    private ChessPosition endPosition;
-    private ChessPiece.PieceType promotionPiece;
-    private String specialMoveType;
-    private ChessPosition otherPiecePositionInSpecialMove;
+    private final ChessPosition startPosition;
+    private final ChessPosition endPosition;
+    private final ChessPiece.PieceType promotionPiece;
 
-    public ChessMove() {
-        this.startPosition = new ChessPosition();
-        this.endPosition = new ChessPosition(); // automatically sets the point at 1,1
-        this.specialMoveType = "Normal";
-    }
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition) {
         this.startPosition = startPosition;
         this.endPosition = endPosition;
         this.promotionPiece = null; // promotionPiece is optional
-        this.specialMoveType = "Normal";
-        this.otherPiecePositionInSpecialMove = null;
     }
 
     public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
@@ -35,25 +26,6 @@ public class ChessMove {
         this.startPosition = startPosition;
         this.endPosition = endPosition;
         this.promotionPiece = promotionPiece;
-        this.specialMoveType = "Normal";
-        this.otherPiecePositionInSpecialMove = null;
-    }
-
-    public ChessMove(ChessPosition startPosition, ChessPosition endPosition,
-                     ChessPiece.PieceType promotionPiece, String specialMoveType, ChessPosition otherPiecePositionInSpecialMove) {
-        this.startPosition = startPosition;
-        this.endPosition = endPosition;
-        this.promotionPiece = promotionPiece;
-        this.specialMoveType = specialMoveType;
-        this.otherPiecePositionInSpecialMove = otherPiecePositionInSpecialMove;
-    }
-
-    public String getSpecialMoveType() {
-        return specialMoveType;
-    }
-
-    public ChessPosition getOtherPiecePositionInSpecialMove() {
-        return otherPiecePositionInSpecialMove;
     }
 
     /**
@@ -80,8 +52,12 @@ public class ChessMove {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         ChessMove chessMove = (ChessMove) o;
         return Objects.equals(startPosition, chessMove.startPosition) && Objects.equals(endPosition, chessMove.endPosition) && promotionPiece == chessMove.promotionPiece;
     }
@@ -99,9 +75,6 @@ public class ChessMove {
      * @return Type of piece to promote a pawn to, or null if no promotion
      */
     public ChessPiece.PieceType getPromotionPiece() {
-        if (promotionPiece == null){
-            return null;
-        }
         return this.promotionPiece;
     }
 }
