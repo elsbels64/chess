@@ -3,6 +3,7 @@ package chess;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 
 import static chess.ChessGame.TeamColor;
 import static chess.ChessPiece.PieceType;
@@ -119,23 +120,31 @@ public class ChessBoard {
         }
     }
 
-    public void printBoard() {
-        for (int row = 7; row >= 0; row--) {
-            StringBuilder sb = new StringBuilder();
-            for (int col = 0; col < 8; col++) {
-                sb.append("|");
-                ChessPiece piece = chessBoard[col][row];
-                if (piece == null) {
-                    sb.append(" ");
-                } else {
-                    char symbol = piece.getTeamColor() == TeamColor.WHITE ? Character.toUpperCase(piece.getPieceType().toString().charAt(0))
-                            : Character.toLowerCase(piece.getPieceType().toString().charAt(0));
-                    sb.append(symbol);
+    final static Map<PieceType, Character> TYPE_TO_CHAR_MAP = Map.of(
+            ChessPiece.PieceType.PAWN,'p',
+            ChessPiece.PieceType.KNIGHT, 'n',
+            ChessPiece.PieceType.ROOK,'r',
+            ChessPiece.PieceType.QUEEN, 'q',
+            ChessPiece.PieceType.KING, 'k',
+            ChessPiece.PieceType.BISHOP,'b');
+
+
+    @Override
+    public String toString() {
+        StringBuilder boardString = new StringBuilder();
+        for(int row = 1; row<=8; row++){
+            for(int col = 1; col<=8; col++){
+                if(getPiece(new ChessPosition(row, col))==null){
+                    boardString.append(" ");
+                }else {
+                    Character piece = getPiece(new ChessPosition(row, col)).getTeamColor() == ChessGame.TeamColor.WHITE ? Character.toUpperCase(TYPE_TO_CHAR_MAP.get(((getPiece(new ChessPosition(row, col))).getPieceType()))) :
+                            Character.toLowerCase(TYPE_TO_CHAR_MAP.get(((getPiece(new ChessPosition(row, col))).getPieceType())));
+                    boardString.append(piece);
                 }
             }
-            sb.append("|");
-            System.out.println(sb.toString());
+            boardString.append("\n");
         }
+        return String.valueOf(boardString);
     }
 
     @Override
