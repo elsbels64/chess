@@ -16,7 +16,6 @@ public class ChessGame {
 
 
     public ChessGame() {
-        System.out.println("creating chess board");
         teamTurn = TeamColor.WHITE;
         board = new ChessBoard();
         board.resetBoard();
