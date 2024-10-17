@@ -103,7 +103,9 @@ public class ChessPiece {
         Collection<ChessMove> moves = new ArrayList<>();
         for (int[] direction : directions) {
             for (int i = 1; i <= howFar; i++) {
-                ChessPosition checkingPosition = new ChessPosition(myPosition.getRow() + (i * direction[0]), myPosition.getColumn() + (i * direction[1]));
+                ChessPosition checkingPosition = new ChessPosition(
+                        myPosition.getRow() + (i * direction[0]), myPosition.getColumn() + (i * direction[1])
+                );
                 String checkSpaceResult = checkSpace(board, myPosition, checkingPosition);
                 if (checkSpaceResult.equals("stop")) {
                     break;
@@ -179,7 +181,7 @@ public class ChessPiece {
 
 
     public Collection<ChessMove> pawnMoves(ChessBoard board, ChessPosition myPosition) {
-        Collection<ChessMove> moves = new ArrayList<>();
+        Collection<ChessMove> moves;
         if (board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE) {
             moves = checkPawnDirections(board, myPosition, 1, 2, 7);
         } else {
