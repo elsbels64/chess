@@ -13,8 +13,6 @@ public class ChessGame {
 
     private TeamColor teamTurn;
     private ChessBoard board;
-    private Collection<ChessPosition> doubleMovePawns;
-    private Collection<ChessPosition> unmovedRooksAndKings;
 
 
 
@@ -23,8 +21,6 @@ public class ChessGame {
         teamTurn = TeamColor.WHITE;
         board = new ChessBoard();
         board.resetBoard();
-        doubleMovePawns = new ArrayList<>();
-        unmovedRooksAndKings = new ArrayList<>();
     }
 
     /**
@@ -64,10 +60,9 @@ public class ChessGame {
             return null;
         }
         Collection<ChessMove> validMoves = piece.pieceMoves(board, startPosition);
-        //add enpasant and castling
 
-//        remove moves that leave the king exposed/incheck
-        Collection<ChessMove> toRemove = new ArrayList<>();;
+//        remove moves that leave the king exposed/in check
+        Collection<ChessMove> toRemove = new ArrayList<>();
         for(ChessMove move : validMoves){
             var newGame = new ChessGame();
             newGame.setBoard(new ChessBoard(this.board));
@@ -102,7 +97,7 @@ public class ChessGame {
         if(board.getPiece(move.getStartPosition()).getTeamColor()!=teamTurn){
             throw new InvalidMoveException("Move not valid. Not the teams turn.");
         }
-        ChessPiece movingPiece = board.getPiece(move.getStartPosition());;
+        ChessPiece movingPiece = board.getPiece(move.getStartPosition());
         if(move.getPromotionPiece()!=null){ // promote the piece if necessary
             movingPiece = new ChessPiece(movingPiece.getTeamColor(), move.getPromotionPiece());
         }
@@ -179,13 +174,10 @@ public class ChessGame {
         if(teamColor.equals(teamTurn)) {
             if (!isInCheck(teamColor)) {
                 board.updateColorPositionsAndKings();
-                ChessPosition kingPosition = (teamColor == TeamColor.WHITE) ? board.whiteKing : board.blackKing;
                 Collection<ChessPosition> teamPositions = (teamColor == TeamColor.BLACK) ? board.blackPositions : board.whitePositions;
                 Collection<ChessMove> pieceMoves = new ArrayList<>();
-                ;
 
                 for (ChessPosition position : teamPositions) {
-                    ChessPiece piece = board.getPiece(position);
                     pieceMoves.addAll(validMoves(position));
                 }
                 return pieceMoves.isEmpty();
