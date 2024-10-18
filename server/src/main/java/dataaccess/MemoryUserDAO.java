@@ -5,7 +5,7 @@ import model.UserData;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MemoryDataAccess implements DataAccess{
+public class MemoryUserDAO implements UserDAO {
     final private Map<String, UserData> users = new HashMap<>();
 
     public Map<String, UserData> getUsers() {
@@ -13,12 +13,11 @@ public class MemoryDataAccess implements DataAccess{
     }
 
     @Override
-    public UserData addUser(UserData userData) throws DataAccessException {
+    public void addUser(UserData userData) throws DataAccessException {
         if (users.containsKey(userData.username())) {
             throw new DataAccessException("User already exists");
         }
         else{users.put(userData.username(), userData);
-            return userData;
         }
     }
 
@@ -37,7 +36,7 @@ public class MemoryDataAccess implements DataAccess{
     }
 
     @Override
-    public void deleteAllUsers() throws DataAccessException {
+    public void deleteAllUsers(){
         users.clear();
     }
 }

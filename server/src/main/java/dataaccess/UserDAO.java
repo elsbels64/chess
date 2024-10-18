@@ -2,10 +2,8 @@ package dataaccess;
 
 import model.UserData;
 
-import java.util.Collection;
-
-public interface DataAccess {
-    UserData addUser(UserData userData) throws DataAccessException;
+public interface UserDAO {
+    void addUser(UserData userData) throws DataAccessException;
 
 //    Collection<Pet> listPets() throws ResponseException;
 
@@ -13,5 +11,5 @@ public interface DataAccess {
 
     void deleteUser(String username) throws DataAccessException;
 
-    void deleteAllUsers() throws DataAccessException;
+    void deleteAllUsers();
 }

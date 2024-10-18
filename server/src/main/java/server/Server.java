@@ -6,6 +6,8 @@ import spark.*;
 import com.google.gson.Gson;
 import service.Service;
 
+import java.security.NoSuchAlgorithmException;
+
 
 public class Server {
     private final Service service;
@@ -31,7 +33,7 @@ public class Server {
         Spark.awaitStop();
     }
 
-    private String createUser(Request req, Response res) throws DataAccessException {
+    private String createUser(Request req, Response res) throws DataAccessException, NoSuchAlgorithmException {
         var g = new Gson();
         var newUser = g.fromJson(
             String.valueOf(req.body()), UserData.class);
