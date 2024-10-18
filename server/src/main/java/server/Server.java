@@ -22,7 +22,8 @@ public class Server {
         Spark.staticFiles.location("web");
 
         // Register your endpoints and handle exceptions here.
-        Spark.post("/user",(req, res) -> createUser(req, res));
+        Spark.post("/user", this::createUser);
+        Spark.delete("/db", this::clearAllData);
 
         Spark.awaitInitialization();
         return Spark.port();
@@ -40,4 +41,10 @@ public class Server {
         var resUserData = service.registerUser(newUser);
         return g.toJson(resUserData);
     }
+
+    private String clearAllData(Request req, Response res){
+        service.clearDatabases();
+        return "{}";
+    }
+
 }

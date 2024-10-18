@@ -2,6 +2,7 @@ package service;
 
 import dataaccess.DataAccessException;
 import dataaccess.MemoryAuthDAO;
+import dataaccess.MemoryGameDAO;
 import model.AuthData;
 import model.UserData;
 import dataaccess.MemoryUserDAO;
@@ -16,6 +17,7 @@ import static javax.crypto.Cipher.SECRET_KEY;
 public class Service {
     MemoryUserDAO userDataAccess = new MemoryUserDAO();
     MemoryAuthDAO authDataAccess = new MemoryAuthDAO();
+    MemoryGameDAO gameDataAccess = new MemoryGameDAO();
     public AuthData registerUser(UserData newUser) throws DataAccessException, NoSuchAlgorithmException {
         if(userDataAccess.getUser(newUser.username())!=null) {
             throw new DataAccessException("User already exists");
@@ -48,5 +50,11 @@ public class Service {
 
         // Encode the hashed bytes to Base64
         return Base64.getEncoder().encodeToString(hashedBytes);
+    }
+
+    public void clearDatabases(){
+        userDataAccess.deleteAll();
+        authDataAccess.deleteAll();
+        gameDataAccess.deleteAll();
     }
 }

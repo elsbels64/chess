@@ -39,7 +39,7 @@ public class MemoryAuthDAO implements AuthDAO{
     }
 
     @Override
-    public void deleteAllAuths() {
+    public void deleteAll() {
         auths.clear();
     }
 }
