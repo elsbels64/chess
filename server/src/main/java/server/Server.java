@@ -1,5 +1,6 @@
 package server;
 
+import dataaccess.DataAccessException;
 import model.UserData;
 import spark.*;
 import com.google.gson.Gson;
@@ -30,7 +31,7 @@ public class Server {
         Spark.awaitStop();
     }
 
-    private String createUser(Request req, Response res){
+    private String createUser(Request req, Response res) throws DataAccessException {
         var g = new Gson();
         var newUser = g.fromJson(
             String.valueOf(req.body()), UserData.class);
