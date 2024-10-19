@@ -1,9 +1,7 @@
 package server;
 import dataaccess.*;
-import model.UserData;
+import model.*;
 import model.Error;
-import model.GameData;
-import model.AuthData;
 import spark.*;
 import com.google.gson.Gson;
 import service.Service;
@@ -83,10 +81,13 @@ public class Server {
         return "{\"gameID\": " + gameID + "}";
     }
 
-    private String joinGame(Request req, Response res) {
+    private String joinGame(Request req, Response res) throws UnauthorizedException, BadRequestException, AlreadyTakenException, DataAccessException {
         String authToken = req.headers("Authorization");
-        
-        service.joinGame(authToken,);
+        var g = new Gson();
+        GameRequests gameRequests = g.fromJson(req.body(), GameRequests.class);
+        String playerColor = gameRequests.playerColor();
+        int gameID = gameRequests.gameID();
+        service.joinGame(authToken,gameID,playerColor);
         return "{}";
     }
 
