@@ -11,43 +11,46 @@ public class MemoryGameDAO implements GameDAO{
     final private Map<Integer, GameData> games = new HashMap<>();
 
     @Override
-    public void addGame(GameData gameData) throws DataAccessException {
-        if (games.containsKey(gameData.gameID())) {
-            throw new DataAccessException("User already exists");
-        }
-        else{games.put(gameData.gameID(), gameData);
-        }
-
+    public void addGame(GameData gameData){
+        games.put(gameData.gameID(), gameData);
     }
 
     @Override
-    public GameData getGame(String gameID) {
-        return null;
+    public GameData getGame(int gameID) {
+        return games.get(gameID);
     }
 
     @Override
-    public String addWhiteUsername(String userName, String gameID) throws DataAccessException {
-        return "";
+    public void addWhiteUsername(String userName, int gameID){
+        GameData gameData = games.get(gameID);
+        games.remove(gameID);
+        GameData updatedGameData = new GameData(gameData.gameID(), userName,gameData.blackUsername(),gameData.gameName(),gameData.game());
+        games.put(updatedGameData.gameID(), updatedGameData);
     }
 
     @Override
-    public void addBlackUsername(String authToken, String gameID) throws DataAccessException {
-
+    public void addBlackUsername(String userName, int gameID) {
+        GameData gameData = games.get(gameID);
+        games.remove(gameID);
+        GameData updatedGameData = new GameData(gameData.gameID(), gameData.whiteUsername(), userName, gameData.gameName(),gameData.game());
+        games.put(updatedGameData.gameID(), updatedGameData);
     }
 
     @Override
-    public void updateGame(ChessGame chessGame, String gameID) throws DataAccessException {
-
+    public void updateGame(ChessGame chessGame, int gameID) {
+        GameData gameData = games.get(gameID);
+        games.remove(gameID);
+        GameData updatedGameData = new GameData(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(),chessGame);
+        games.put(updatedGameData.gameID(), updatedGameData);
     }
 
     @Override
-    public void deleteGame(String gameID) throws DataAccessException {
+    public void deleteGame(int gameID) throws DataAccessException {
         if (games.containsKey(gameID)) {
             games.remove(gameID);
         } else {
             throw new DataAccessException("User not found");
         }
-
     }
 
     @Override

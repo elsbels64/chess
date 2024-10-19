@@ -10,17 +10,17 @@ public interface GameDAO {
     //blackUsername	String
     //gameName	String
     //game	ChessGame
-    void addGame(GameData gameData) throws DataAccessException;
+    void addGame(GameData gameData);
 
-    GameData getGame(String gameID);
+    GameData getGame(int gameID);
 
-    String addWhiteUsername(String userName, String gameID) throws DataAccessException;
+    void addWhiteUsername(String userName, int gameID);
 
-    void addBlackUsername(String authToken, String gameID) throws DataAccessException;
+    void addBlackUsername(String userName, int gameID);
 
-    void updateGame(ChessGame chessGame, String gameID) throws DataAccessException;
+    void updateGame(ChessGame chessGame, int gameID);
 
-    void deleteGame(String gameID) throws DataAccessException;
+    void deleteGame(int gameID) throws DataAccessException;
 
     void deleteAll();
 }

@@ -1,55 +1,91 @@
 package service;
 
-import dataaccess.DataAccessException;
-import dataaccess.MemoryAuthDAO;
-import dataaccess.MemoryGameDAO;
+import chess.ChessGame;
+import dataaccess.*;
 import model.AuthData;
+import model.GameData;
 import model.UserData;
-import dataaccess.MemoryUserDAO;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 
-import static javax.crypto.Cipher.SECRET_KEY;
+import java.util.Random;
+import java.util.UUID;
 
 public class Service {
-    MemoryUserDAO userDataAccess = new MemoryUserDAO();
-    MemoryAuthDAO authDataAccess = new MemoryAuthDAO();
-    MemoryGameDAO gameDataAccess = new MemoryGameDAO();
-    public AuthData registerUser(UserData newUser) throws DataAccessException, NoSuchAlgorithmException {
+    MemoryUserDAO userDataAccess;
+    MemoryAuthDAO authDataAccess;
+    MemoryGameDAO gameDataAccess;
+
+    public Service(MemoryUserDAO userDataAccess, MemoryAuthDAO authDataAccess, MemoryGameDAO gameDataAccess) {
+        this.userDataAccess = userDataAccess;
+        this.authDataAccess = authDataAccess;
+        this.gameDataAccess = gameDataAccess;
+    }
+
+    public AuthData registerUser(UserData newUser) throws AlreadyTakenException, BadRequestException {
+        if((newUser.password() == null || newUser.email()==null)|| newUser.username() == null ){
+            throw new BadRequestException("A field is null");
+        }
         if(userDataAccess.getUser(newUser.username())!=null) {
-            throw new DataAccessException("User already exists");
+            throw new AlreadyTakenException("User already exists");
         }else{
             userDataAccess.addUser(newUser);
-            String authtoken = generateAuthToken(newUser);
-            AuthData auth = new AuthData(authtoken, newUser.username());
+            String authToken = generateAuthToken(newUser);
+            AuthData auth = new AuthData(authToken, newUser.username());
             authDataAccess.addAuth(auth);
             return auth;
         }
     }
 
-    public UserData loginUser(UserData newUser) throws DataAccessException {
-        if(userDataAccess.getUser(newUser.username())==null) {
-            throw new DataAccessException("User already exists");
+    public AuthData loginUser(UserData user) throws BadRequestException, UnauthorizedException {
+        if(user.password() == null || user.username() == null ){
+            throw new BadRequestException("A field is null");
+        }
+        if(userDataAccess.getUser(user.username())==null) {
+            throw new UnauthorizedException("Does not exist");
         }else{
-        return userDataAccess.getUser(newUser.username());
+            UserData userInDataBase = userDataAccess.getUser(user.username());
+            if(!user.password().equals(userInDataBase.password())){
+                throw new UnauthorizedException("Wrong password");
+            }
+            String authToken = generateAuthToken(user);
+            AuthData auth = new AuthData(authToken, user.username());
+            authDataAccess.addAuth(auth);
+            return auth;
         }
     }
 
-    public static String generateAuthToken(UserData user) throws NoSuchAlgorithmException {
-        // Combine user data with a secret key
-        String combinedData = user.username() + ":" + user.Password() + ":" + user.email() + ":" + SECRET_KEY;
+    public void logoutUser(String authToken) throws UnauthorizedException, DataAccessException {
+        checkAuthToken(authToken);
+        authDataAccess.deleteAuth(authToken);
+    }
 
-        // Get instance of SHA-256
-        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+    public int createGame(String authToken, String gameName) throws UnauthorizedException, DataAccessException {
+        checkAuthToken(authToken);
+        //I may need to add something to check if a game of the same name already exists
+        int gameID = generateGameID();
+        if(gameDataAccess.getGame(gameID)!=null){
+            gameID=generateGameID();
+        }
+        GameData newGameData = new GameData(gameID,"", "",gameName, new ChessGame());
+        gameDataAccess.addGame(newGameData);
+        return gameID;
+    }
 
-        // Hash the combined data
-        byte[] hashedBytes = digest.digest(combinedData.getBytes(StandardCharsets.UTF_8));
+    public static String generateAuthToken(UserData user){
+        return UUID.randomUUID().toString();
+    }
 
-        // Encode the hashed bytes to Base64
-        return Base64.getEncoder().encodeToString(hashedBytes);
+    public static int generateGameID(){
+        Random random = new Random();
+        return random.nextInt();
+    }
+
+    public String checkAuthToken(String authToken)throws UnauthorizedException{
+        AuthData authData = authDataAccess.getAuthData(authToken);
+        if(authData==null){
+            throw new UnauthorizedException("Auth does not exist in database");
+        }
+        return authData.username();
     }
 
     public void clearDatabases(){
@@ -57,4 +93,6 @@ public class Service {
         authDataAccess.deleteAll();
         gameDataAccess.deleteAll();
     }
+
+    //for game ID just generate a random number and use that as the gameID
 }
