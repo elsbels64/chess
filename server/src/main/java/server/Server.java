@@ -6,6 +6,10 @@ import spark.*;
 import com.google.gson.Gson;
 import service.Service;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 public class Server {
     MemoryUserDAO userDataAccess = new MemoryUserDAO();
@@ -30,6 +34,7 @@ public class Server {
         Spark.delete("/session", this::logoutUser);
         Spark.post("/game",this::createGame);
         Spark.put("/game",this::joinGame);
+        Spark.get("/game",this::getGames);
 
         Spark.exception(DataAccessException.class, this::dataAccessExceptionHandler);
         Spark.exception(AlreadyTakenException.class, this::alreadyTakenExceptionHandler);
@@ -70,6 +75,15 @@ public class Server {
         String authToken = req.headers("Authorization");
         service.logoutUser(authToken);
         return "{}";
+    }
+
+    private String getGames(Request req, Response res) throws UnauthorizedException {
+        String authToken = req.headers("Authorization");
+        List<GameData> gamesList = service.getGames(authToken);
+        Map<String, Object> responseMap = new HashMap<>();
+        responseMap.put("games", gamesList);
+        Gson g = new Gson();
+        return g.toJson(responseMap);
     }
 
     private String createGame(Request req, Response res) throws UnauthorizedException, DataAccessException {

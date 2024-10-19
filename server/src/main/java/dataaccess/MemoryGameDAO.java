@@ -4,7 +4,9 @@ import chess.ChessGame;
 import model.GameData;
 import model.UserData;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MemoryGameDAO implements GameDAO{
@@ -18,6 +20,15 @@ public class MemoryGameDAO implements GameDAO{
     @Override
     public GameData getGame(int gameID) {
         return games.get(gameID);
+    }
+
+    @Override
+    public List<GameData> getGames(){
+        List<GameData> gameDataList = new ArrayList<>();
+        for (GameData gameData : games.values()) {
+            gameDataList.add(gameData);
+        }
+        return gameDataList;
     }
 
     @Override

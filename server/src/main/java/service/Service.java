@@ -7,6 +7,7 @@ import model.GameData;
 import model.UserData;
 
 
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
@@ -57,6 +58,11 @@ public class Service {
     public void logoutUser(String authToken) throws UnauthorizedException, DataAccessException {
         checkAuthToken(authToken);
         authDataAccess.deleteAuth(authToken);
+    }
+
+    public List<GameData> getGames(String authToken) throws UnauthorizedException {
+        checkAuthToken(authToken);
+        return gameDataAccess.getGames();
     }
 
     public int createGame(String authToken, String gameName) throws UnauthorizedException, DataAccessException {

@@ -3,6 +3,8 @@ package dataaccess;
 import chess.ChessGame;
 import model.GameData;
 
+import java.util.List;
+
 public interface GameDAO {
 
     //gameID	int
@@ -13,6 +15,8 @@ public interface GameDAO {
     void addGame(GameData gameData);
 
     GameData getGame(int gameID);
+
+    List<GameData> getGames();
 
     void addWhiteUsername(String userName, int gameID);
 
