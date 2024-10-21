@@ -48,23 +48,6 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
-    public void updateGame(ChessGame chessGame, int gameID) {
-        GameData gameData = games.get(gameID);
-        games.remove(gameID);
-        GameData updatedGameData = new GameData(gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(),chessGame);
-        games.put(updatedGameData.gameID(), updatedGameData);
-    }
-
-    @Override
-    public void deleteGame(int gameID) throws DataAccessException {
-        if (games.containsKey(gameID)) {
-            games.remove(gameID);
-        } else {
-            throw new DataAccessException("User not found");
-        }
-    }
-
-    @Override
     public void deleteAll() {
         games.clear();
     }
