@@ -98,8 +98,8 @@ public class ServiceTest {
         Assertions.assertDoesNotThrow(()->gameDataAccess.getGame(gameID));
         var game = gameDataAccess.getGame(gameID);
         Assertions.assertEquals("New Game", game.gameName());
-        Assertions.assertEquals("", game.whiteUsername());
-        Assertions.assertEquals("", game.blackUsername());
+        Assertions.assertEquals(null, game.whiteUsername());
+        Assertions.assertEquals(null, game.blackUsername());
     }
 
     @Test
@@ -117,8 +117,8 @@ public class ServiceTest {
         Assertions.assertDoesNotThrow(()->gameDataAccess.getGame(gameID));
         var games = service.getGames(authData.authToken());
         Assertions.assertEquals("New Game", games.get(0).gameName());
-        Assertions.assertEquals("", games.get(0).whiteUsername());
-        Assertions.assertEquals("", games.get(0).blackUsername());
+        Assertions.assertEquals(null, games.get(0).whiteUsername());
+        Assertions.assertEquals(null, games.get(0).blackUsername());
     }
 
     @Test
@@ -134,14 +134,14 @@ public class ServiceTest {
         Assertions.assertDoesNotThrow(()->gameDataAccess.getGame(gameID2));
         var gameData2 = gameDataAccess.getGame(gameID2);
         var games = service.getGames(authData.authToken());
-        Assertions.assertEquals("New Game 2", games.get(0).gameName());
-        Assertions.assertEquals("", games.get(0).whiteUsername());
-        Assertions.assertEquals("", games.get(0).blackUsername());
-        Assertions.assertEquals(gameData2,games.get(0));
-        Assertions.assertEquals("New Game", games.get(1).gameName());
-        Assertions.assertEquals("", games.get(1).whiteUsername());
-        Assertions.assertEquals("", games.get(1).blackUsername());
-        Assertions.assertEquals(gameData1,games.get(1));
+        Assertions.assertEquals("New Game", games.get(0).gameName());
+        Assertions.assertEquals(null, games.get(0).whiteUsername());
+        Assertions.assertEquals(null, games.get(0).blackUsername());
+        Assertions.assertEquals(gameData1,games.get(0));
+        Assertions.assertEquals("New Game 2", games.get(1).gameName());
+        Assertions.assertEquals(null, games.get(1).whiteUsername());
+        Assertions.assertEquals(null, games.get(1).blackUsername());
+        Assertions.assertEquals(gameData2,games.get(1));
     }
 
     @Test
@@ -161,7 +161,8 @@ public class ServiceTest {
         var gameName = "New Game";
         var gameID = service.createGame(authData.authToken(), gameName);
         Assertions.assertDoesNotThrow(()->gameDataAccess.getGame(gameID));
-        Assertions.assertThrows(UnauthorizedException.class,()->service.joinGame("fake auth", gameID, "white"));
+        Assertions.assertThrows(UnauthorizedException.class,
+                ()->service.joinGame("fake auth", gameID, "white"));
     }
 
     @Test
@@ -174,13 +175,13 @@ public class ServiceTest {
         Assertions.assertDoesNotThrow(()->gameDataAccess.getGame(gameID));
         var games = service.getGames(authData.authToken());
         Assertions.assertEquals("New Game", games.get(0).gameName());
-        Assertions.assertEquals("", games.get(0).whiteUsername());
-        Assertions.assertEquals("", games.get(0).blackUsername());
-        service.joinGame(authData.authToken(), gameID, "white");
+        Assertions.assertEquals(null, games.get(0).whiteUsername());
+        Assertions.assertEquals(null, games.get(0).blackUsername());
+        service.joinGame(authData.authToken(), gameID, "WHITE");
         games = service.getGames(authData.authToken());
         Assertions.assertEquals("New Game", games.get(0).gameName());
         Assertions.assertEquals("newUser", games.get(0).whiteUsername());
-        Assertions.assertEquals("", games.get(0).blackUsername());
+        Assertions.assertEquals(null, games.get(0).blackUsername());
     }
 
     @Test
@@ -195,14 +196,16 @@ public class ServiceTest {
         Assertions.assertDoesNotThrow(()->gameDataAccess.getGame(gameID));
         var games = service.getGames(authData.authToken());
         Assertions.assertEquals("New Game", games.get(0).gameName());
-        Assertions.assertEquals("", games.get(0).whiteUsername());
-        Assertions.assertEquals("", games.get(0).blackUsername());
-        service.joinGame(authData.authToken(), gameID, "white");
+        Assertions.assertEquals(null, games.get(0).whiteUsername());
+        Assertions.assertEquals(null, games.get(0).blackUsername());
+        service.joinGame(authData.authToken(), gameID, "WHITE");
         games = service.getGames(authData.authToken());
         Assertions.assertEquals("New Game", games.get(0).gameName());
         Assertions.assertEquals("newUser", games.get(0).whiteUsername());
-        Assertions.assertEquals("", games.get(0).blackUsername());
-        Assertions.assertThrows(AlreadyTakenException.class, ()->service.joinGame(authData2.authToken(), gameID, "white"), "did not throw Already taken exception");
+        Assertions.assertEquals(null, games.get(0).blackUsername());
+        Assertions.assertThrows(AlreadyTakenException.class,
+                ()->service.joinGame(authData2.authToken(), gameID, "WHITE"),
+                "did not throw Already taken exception");
     }
 
 }

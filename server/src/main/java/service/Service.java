@@ -70,7 +70,7 @@ public class Service {
         //I may need to add something to check if a game of the same name already exists
         Random random = new Random();
         int gameID = random.nextInt(1_000_000) + 1;
-        GameData newGameData = new GameData(gameID,"", "",gameName, new ChessGame());
+        GameData newGameData = new GameData(gameID,null, null,gameName, new ChessGame());
         gameDataAccess.addGame(newGameData);
         return gameID;
     }
@@ -84,14 +84,14 @@ public class Service {
         }
         String username = checkAuthToken(authToken);
         GameData gameData = gameDataAccess.getGame(gameID);
-        if(playerColor.equals("white")){
-            if(!gameData.whiteUsername().isEmpty()){
+        if(playerColor.equals("WHITE")){
+            if(gameData.whiteUsername() != null){
                 throw new AlreadyTakenException("there is already a white player");
             }
             gameDataAccess.addWhiteUsername(username, gameID);
         }
-        if(playerColor.equals("black")){
-            if(!gameData.blackUsername().isEmpty()){
+        if(playerColor.equals("BLACK")){
+            if(gameData.blackUsername() != null){
                 throw new AlreadyTakenException("there is already a black player");
             }
             gameDataAccess.addBlackUsername(username, gameID);
