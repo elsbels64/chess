@@ -43,8 +43,8 @@ public class MemoryGameDAO implements GameDAO{
     public void addBlackUsername(String userName, int gameID) {
         GameData gameData = games.get(gameID);
         games.remove(gameID);
-        GameData updatedGameData = new GameData(gameData.gameID(), gameData.whiteUsername(), userName, gameData.gameName(),gameData.game());
-        games.put(updatedGameData.gameID(), updatedGameData);
+        GameData updatedGameData = new GameData(gameID, gameData.whiteUsername(), userName, gameData.gameName(),gameData.game());
+        games.put(gameID, updatedGameData);
     }
 
     @Override

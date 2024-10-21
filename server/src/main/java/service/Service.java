@@ -30,7 +30,7 @@ public class Service {
             throw new AlreadyTakenException("User already exists");
         }else{
             userDataAccess.addUser(newUser);
-            String authToken = generateAuthToken(newUser);
+            String authToken = generateAuthToken();
             AuthData auth = new AuthData(authToken, newUser.username());
             authDataAccess.addAuth(auth);
             return auth;
@@ -48,7 +48,7 @@ public class Service {
             if(!user.password().equals(userInDataBase.password())){
                 throw new UnauthorizedException("Wrong password");
             }
-            String authToken = generateAuthToken(user);
+            String authToken = generateAuthToken();
             AuthData auth = new AuthData(authToken, user.username());
             authDataAccess.addAuth(auth);
             return auth;
@@ -65,16 +65,17 @@ public class Service {
         return gameDataAccess.getGames();
     }
 
-    public int createGame(String authToken, String gameName) throws UnauthorizedException, DataAccessException {
+    public int createGame(String authToken, String gameName) throws UnauthorizedException {
         checkAuthToken(authToken);
         //I may need to add something to check if a game of the same name already exists
-        int gameID = generateGameID();
+        Random random = new Random();
+        int gameID = random.nextInt(1_000_000) + 1;
         GameData newGameData = new GameData(gameID,"", "",gameName, new ChessGame());
         gameDataAccess.addGame(newGameData);
         return gameID;
     }
 
-    public void joinGame(String authToken,  int gameID, String playerColor) throws UnauthorizedException, AlreadyTakenException, DataAccessException, BadRequestException {
+    public void joinGame(String authToken,  int gameID, String playerColor) throws UnauthorizedException, AlreadyTakenException, BadRequestException {
         if(playerColor==null){
             throw new BadRequestException("no player color provided.");
         }
@@ -84,26 +85,21 @@ public class Service {
         String username = checkAuthToken(authToken);
         GameData gameData = gameDataAccess.getGame(gameID);
         if(playerColor.equals("white")){
-            if(gameData.whiteUsername()!=null){
+            if(!gameData.whiteUsername().isEmpty()){
                 throw new AlreadyTakenException("there is already a white player");
             }
             gameDataAccess.addWhiteUsername(username, gameID);
         }
         if(playerColor.equals("black")){
-            if(gameData.blackUsername()!=null){
+            if(!gameData.blackUsername().isEmpty()){
                 throw new AlreadyTakenException("there is already a black player");
             }
             gameDataAccess.addBlackUsername(username, gameID);
         }
     }
 
-    public static String generateAuthToken(UserData user){
+    public static String generateAuthToken(){
         return UUID.randomUUID().toString();
-    }
-
-    public int generateGameID(){
-        Random random = new Random();
-        return random.nextInt(1_000_000) + 1;
     }
 
     public String checkAuthToken(String authToken)throws UnauthorizedException{
