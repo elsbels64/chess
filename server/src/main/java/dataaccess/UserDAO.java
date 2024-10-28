@@ -3,9 +3,11 @@ package dataaccess;
 import model.UserData;
 
 public interface UserDAO {
-    void addUser(UserData userData);
+    public boolean checkPassword(String password, String databasePassword);
 
-    UserData getUser(String username);
+    void addUser(UserData userData) throws DataAccessException;
 
-    void deleteAll();
+    UserData getUser(String username) throws DataAccessException;
+
+    void deleteAll() throws DataAccessException;
 }

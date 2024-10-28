@@ -8,28 +8,29 @@ import org.junit.jupiter.api.Test;
 
 public class ServiceTest {
 
-    MemoryUserDAO userDataAccess;
-    MemoryAuthDAO authDataAccess;
-    MemoryGameDAO gameDataAccess;
+    UserDAO userDataAccess;
+    AuthDAO authDataAccess;
+    GameDAO gameDataAccess;
     private Service service;
 
     // Initialize fresh instances of DAOs and Service before each test
     @BeforeEach
     public void setUp() {
+
         userDataAccess = new MemoryUserDAO();
         authDataAccess = new MemoryAuthDAO();
         gameDataAccess = new MemoryGameDAO();
         service = new Service(userDataAccess, authDataAccess, gameDataAccess);
     }
     @Test
-    public void registerUserFailure() throws BadRequestException, AlreadyTakenException {
+    public void registerUserFailure() throws BadRequestException, AlreadyTakenException, DataAccessException {
         var userData = new UserData("userName", "Password", "email@email.com");
         service.registerUser(userData);
 
         Assertions.assertThrows(AlreadyTakenException.class, () -> service.registerUser(userData));
     }
     @Test
-    public void registerUserSuccess() throws BadRequestException, AlreadyTakenException {
+    public void registerUserSuccess() throws BadRequestException, AlreadyTakenException, DataAccessException {
         var userData = new UserData("newUser", "Password", "newUser@email.com");
         var authData = service.registerUser(userData);
         Assertions.assertNotNull(authData);  // Verify that authData is returned

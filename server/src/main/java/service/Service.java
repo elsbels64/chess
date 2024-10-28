@@ -12,17 +12,18 @@ import java.util.Random;
 import java.util.UUID;
 
 public class Service {
-    MemoryUserDAO userDataAccess;
-    MemoryAuthDAO authDataAccess;
-    MemoryGameDAO gameDataAccess;
+    private UserDAO userDataAccess;
+    private AuthDAO authDataAccess;
+    private GameDAO gameDataAccess;
 
-    public Service(MemoryUserDAO userDataAccess, MemoryAuthDAO authDataAccess, MemoryGameDAO gameDataAccess) {
+    public Service(UserDAO userDataAccess, AuthDAO authDataAccess, GameDAO gameDataAccess) {
         this.userDataAccess = userDataAccess;
         this.authDataAccess = authDataAccess;
         this.gameDataAccess = gameDataAccess;
     }
 
-    public AuthData registerUser(UserData newUser) throws AlreadyTakenException, BadRequestException {
+
+    public AuthData registerUser(UserData newUser) throws AlreadyTakenException, BadRequestException, DataAccessException {
         if((newUser.password() == null || newUser.email()==null)|| newUser.username() == null ){
             throw new BadRequestException("A field is null");
         }
@@ -37,7 +38,7 @@ public class Service {
         }
     }
 
-    public AuthData loginUser(UserData user) throws BadRequestException, UnauthorizedException {
+    public AuthData loginUser(UserData user) throws BadRequestException, UnauthorizedException, DataAccessException {
         if(user.password() == null || user.username() == null ){
             throw new BadRequestException("A field is null");
         }
@@ -45,13 +46,14 @@ public class Service {
             throw new UnauthorizedException("Does not exist");
         }else{
             UserData userInDataBase = userDataAccess.getUser(user.username());
-            if(!user.password().equals(userInDataBase.password())){
+            if (userDataAccess.checkPassword(user.password(), userInDataBase.password())) {
+                String authToken = generateAuthToken();
+                AuthData auth = new AuthData(authToken, user.username());
+                authDataAccess.addAuth(auth);
+                return auth;
+            } else {
                 throw new UnauthorizedException("Wrong password");
             }
-            String authToken = generateAuthToken();
-            AuthData auth = new AuthData(authToken, user.username());
-            authDataAccess.addAuth(auth);
-            return auth;
         }
     }
 
@@ -110,7 +112,7 @@ public class Service {
         return authData.username();
     }
 
-    public void clearDatabases(){
+    public void clearDatabases() throws DataAccessException {
         userDataAccess.deleteAll();
         authDataAccess.deleteAll();
         gameDataAccess.deleteAll();

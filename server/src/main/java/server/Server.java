@@ -12,13 +12,21 @@ import java.util.Map;
 
 
 public class Server {
-    MemoryUserDAO userDataAccess = new MemoryUserDAO();
-    MemoryAuthDAO authDataAccess = new MemoryAuthDAO();
-    MemoryGameDAO gameDataAccess = new MemoryGameDAO();
+    UserDAO userDataAccess;
+    AuthDAO authDataAccess;
+    GameDAO gameDataAccess;
     private final Service service;
 
 
     public Server() {
+        try{
+            userDataAccess = new MySQLUserDAO();
+            authDataAccess = new MemoryAuthDAO();
+            gameDataAccess = new MemoryGameDAO();
+        }catch(DataAccessException e){
+            throw new RuntimeException("can't start the server");
+        }
+
         this.service = new Service(userDataAccess, authDataAccess, gameDataAccess);
     }
 
@@ -50,7 +58,7 @@ public class Server {
         Spark.awaitStop();
     }
 
-    private String createUser(Request req, Response res) throws AlreadyTakenException, BadRequestException {
+    private String createUser(Request req, Response res) throws AlreadyTakenException, BadRequestException, DataAccessException {
         var g = new Gson();
         var newUser = g.fromJson(
             String.valueOf(req.body()), UserData.class);
@@ -58,7 +66,7 @@ public class Server {
         return g.toJson(resUserData);
     }
 
-    private String loginUser(Request req, Response res) throws BadRequestException, UnauthorizedException {
+    private String loginUser(Request req, Response res) throws BadRequestException, UnauthorizedException, DataAccessException {
         var g = new Gson();
         var user = g.fromJson(
                 String.valueOf(req.body()), UserData.class);
@@ -66,7 +74,7 @@ public class Server {
         return g.toJson(resUserData);
     }
 
-    private String clearAllData(Request req, Response res){
+    private String clearAllData(Request req, Response res) throws DataAccessException {
         service.clearDatabases();
         return "{}";
     }

@@ -12,6 +12,10 @@ public class MemoryUserDAO implements UserDAO {
         return users;
     }
 
+    public boolean checkPassword(String password, String databasePassword){
+        return password.equals(databasePassword);
+    }
+
     @Override
     public void addUser(UserData userData) {
         users.put(userData.username(), userData);
