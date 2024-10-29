@@ -8,6 +8,13 @@ import java.sql.SQLException;
 
 public class MySQLAuthDAO implements AuthDAO{
     public MySQLAuthDAO() throws DataAccessException {
+        String createStatement = """
+                CREATE TABLE IF NOT EXISTS  auths (
+                  `authToken` varchar(256) NOT NULL,
+                  `username` varchar(256) NOT NULL,
+                  PRIMARY KEY (`authToken`)
+                )
+                """;
         DatabaseManager.configureDatabase(createStatement);
     }
 
@@ -70,14 +77,4 @@ public class MySQLAuthDAO implements AuthDAO{
     }
 
 
-
-    private final String createStatement =
-            """
-            CREATE TABLE IF NOT EXISTS  auths (
-              `authToken` varchar(256) NOT NULL,
-              `username` varchar(256) NOT NULL,
-              PRIMARY KEY (`authToken`)
-            )
-            """
-            ;
 }

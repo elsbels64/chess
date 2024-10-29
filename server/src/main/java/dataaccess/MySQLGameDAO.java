@@ -10,6 +10,16 @@ import java.util.List;
 
 public class MySQLGameDAO implements GameDAO{
     public MySQLGameDAO() throws DataAccessException {
+        String createStatement = """
+                CREATE TABLE IF NOT EXISTS games(
+                  `gameID` int NOT NULL,
+                  `gameName` varchar(256) NOT NULL,
+                  `whiteUsername` varchar(256) DEFAULT NULL,
+                  `blackUsername` varchar(256) DEFAULT NULL,
+                  `game` TEXT DEFAULT NULL,
+                  PRIMARY KEY (`gameID`)
+                )
+                """;
         DatabaseManager.configureDatabase(createStatement);
     }
 
@@ -117,15 +127,4 @@ public class MySQLGameDAO implements GameDAO{
         }
     }
 
-    private final String createStatement =
-            """
-            CREATE TABLE IF NOT EXISTS games(
-              `gameID` int NOT NULL,
-              `gameName` varchar(256) NOT NULL,
-              `whiteUsername` varchar(256) DEFAULT NULL,
-              `blackUsername` varchar(256) DEFAULT NULL,
-              `game` TEXT DEFAULT NULL,
-              PRIMARY KEY (`gameID`)
-            ) 
-            """;
 }

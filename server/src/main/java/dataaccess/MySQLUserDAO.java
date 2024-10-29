@@ -1,8 +1,6 @@
 package dataaccess;
 
-import com.google.gson.Gson;
 import model.UserData;
-import org.eclipse.jetty.server.Authentication;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.ResultSet;
@@ -15,6 +13,14 @@ public class MySQLUserDAO implements UserDAO{
 
 
     public MySQLUserDAO() throws DataAccessException {
+        String createStatement = """
+                CREATE TABLE IF NOT EXISTS  users (
+                  `username` varchar(256) NOT NULL,
+                  `password` varchar(256) NOT NULL,
+                  `email` varchar(256),
+                  PRIMARY KEY (`username`)
+                )
+                """;
         DatabaseManager.configureDatabase(createStatement);
     }
 
@@ -65,7 +71,7 @@ public class MySQLUserDAO implements UserDAO{
         executeUpdate(statement);
     }
 
-    private int executeUpdate(String statement, Object... params)
+    private void executeUpdate(String statement, Object... params)
             throws DataAccessException {
         //... means you can have as many parameters as you want and it's just gonna put them on params
         try (var conn = DatabaseManager.getConnection()) {
@@ -78,9 +84,8 @@ public class MySQLUserDAO implements UserDAO{
                 ps.executeUpdate();
                 var rs = ps.getGeneratedKeys();
                 if (rs.next()) {
-                    return rs.getInt(1);
+                    rs.getInt(1);
                 }
-                return 0;
             }
         } catch (SQLException e) {
             throw new DataAccessException(String.format("unable to update database: %s, %s", statement, e.getMessage()));
@@ -88,15 +93,4 @@ public class MySQLUserDAO implements UserDAO{
     }
 
 
-
-    private final String createStatement =
-            """
-            CREATE TABLE IF NOT EXISTS  users (
-              `username` varchar(256) NOT NULL,
-              `password` varchar(256) NOT NULL,
-              `email` varchar(256),
-              PRIMARY KEY (`username`)
-            )
-            """
-    ;
 }
