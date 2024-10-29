@@ -12,15 +12,15 @@ public interface GameDAO {
     //blackUsername	String
     //gameName	String
     //game	ChessGame
-    void addGame(GameData gameData);
+    void addGame(GameData gameData) throws DataAccessException;
 
-    GameData getGame(int gameID);
+    GameData getGame(int gameID) throws DataAccessException;
 
-    List<GameData> getGames();
+    List<GameData> getGames() throws DataAccessException;
 
-    void addWhiteUsername(String userName, int gameID);
+    void addWhiteUsername(String userName, int gameID) throws DataAccessException;
 
-    void addBlackUsername(String userName, int gameID);
+    void addBlackUsername(String userName, int gameID) throws DataAccessException;
 
-    void deleteAll();
+    void deleteAll() throws DataAccessException;
 }

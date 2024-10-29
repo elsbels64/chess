@@ -22,7 +22,7 @@ public class Server {
         try{
             userDataAccess = new MySQLUserDAO();
             authDataAccess = new MySQLAuthDAO();
-            gameDataAccess = new MemoryGameDAO();
+            gameDataAccess = new MySQLGameDAO();
         }catch(DataAccessException e){
             throw new RuntimeException("can't start the server");
         }
