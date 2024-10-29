@@ -62,12 +62,12 @@ public class Service {
         authDataAccess.deleteAuth(authToken);
     }
 
-    public List<GameData> getGames(String authToken) throws UnauthorizedException {
+    public List<GameData> getGames(String authToken) throws UnauthorizedException, DataAccessException {
         checkAuthToken(authToken);
         return gameDataAccess.getGames();
     }
 
-    public int createGame(String authToken, String gameName) throws UnauthorizedException {
+    public int createGame(String authToken, String gameName) throws UnauthorizedException, DataAccessException {
         checkAuthToken(authToken);
         //I may need to add something to check if a game of the same name already exists
         Random random = new Random();
@@ -77,7 +77,7 @@ public class Service {
         return gameID;
     }
 
-    public void joinGame(String authToken,  int gameID, String playerColor) throws UnauthorizedException, AlreadyTakenException, BadRequestException {
+    public void joinGame(String authToken,  int gameID, String playerColor) throws UnauthorizedException, AlreadyTakenException, BadRequestException, DataAccessException {
         if(playerColor==null){
             throw new BadRequestException("no player color provided.");
         }
@@ -104,7 +104,7 @@ public class Service {
         return UUID.randomUUID().toString();
     }
 
-    public String checkAuthToken(String authToken)throws UnauthorizedException{
+    public String checkAuthToken(String authToken) throws UnauthorizedException, DataAccessException {
         AuthData authData = authDataAccess.getAuthData(authToken);
         if(authData==null){
             throw new UnauthorizedException("Auth does not exist in database");

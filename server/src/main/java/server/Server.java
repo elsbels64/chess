@@ -21,7 +21,7 @@ public class Server {
     public Server() {
         try{
             userDataAccess = new MySQLUserDAO();
-            authDataAccess = new MemoryAuthDAO();
+            authDataAccess = new MySQLAuthDAO();
             gameDataAccess = new MemoryGameDAO();
         }catch(DataAccessException e){
             throw new RuntimeException("can't start the server");
@@ -85,7 +85,7 @@ public class Server {
         return "{}";
     }
 
-    private String getGames(Request req, Response res) throws UnauthorizedException {
+    private String getGames(Request req, Response res) throws UnauthorizedException, DataAccessException {
         String authToken = req.headers("Authorization");
         List<GameData> gamesList = service.getGames(authToken);
         Map<String, Object> responseMap = new HashMap<>();

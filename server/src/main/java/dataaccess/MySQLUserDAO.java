@@ -25,10 +25,9 @@ public class MySQLUserDAO implements UserDAO{
 
     @Override
     public void addUser(UserData userData) throws DataAccessException {
-        var statement = "INSERT INTO users (username, email, password, json) VALUES (?, ?, ?, ?)";
-        var json = new Gson().toJson(userData);
+        var statement = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
         String password = createPasswordHash(userData.password());
-        var id = executeUpdate(statement, userData.username(), userData.email(), password, json);
+        executeUpdate(statement, userData.username(), userData.email(), password);
     }
 
     String createPasswordHash(String clearTextPassword) {
@@ -38,7 +37,7 @@ public class MySQLUserDAO implements UserDAO{
     @Override
     public UserData getUser(String username) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
-            var statement = "SELECT username, password, email, json FROM users WHERE username=?";
+            var statement = "SELECT username, password, email FROM users WHERE username=?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setString(1, username);
                 try (var rs = ps.executeQuery()) {
@@ -57,9 +56,7 @@ public class MySQLUserDAO implements UserDAO{
         String username = rs.getString("username");
         var password = rs.getString("password");
         var email = rs.getString("email");
-        var json = rs.getString("json");
-        var userData = new Gson().fromJson(json, UserData.class);
-        return userData;
+        return new UserData(username, password, email);
     }
 
     @Override
@@ -68,7 +65,7 @@ public class MySQLUserDAO implements UserDAO{
         executeUpdate(statement);
     }
 
-    private int executeUpdate(String statement, Object... params) throws DataAccessException {
+    private int executeUpdate(String statement, Object... params) throws DataAccessException { //... means you can have as many parameters as you want and it's just gonna put them on params
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (var i = 0; i < params.length; i++) {
@@ -96,7 +93,6 @@ public class MySQLUserDAO implements UserDAO{
               `username` varchar(256) NOT NULL,
               `password` varchar(256) NOT NULL,
               `email` varchar(256),
-              `json` TEXT DEFAULT NULL,
               PRIMARY KEY (`username`)
             )
             """
