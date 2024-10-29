@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 public class MySQLAuthDAO implements AuthDAO{
     public MySQLAuthDAO() throws DataAccessException {
-        configureDatabase();
+        DatabaseManager.configureDatabase(createStatement);
     }
 
     @Override
@@ -71,7 +71,7 @@ public class MySQLAuthDAO implements AuthDAO{
 
 
 
-    private final String createStatements =
+    private final String createStatement =
             """
             CREATE TABLE IF NOT EXISTS  auths (
               `authToken` varchar(256) NOT NULL,
@@ -80,16 +80,4 @@ public class MySQLAuthDAO implements AuthDAO{
             )
             """
             ;
-
-
-    private void configureDatabase() throws DataAccessException, DataAccessException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(createStatements)) {
-                preparedStatement.executeUpdate();
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
-        }
-    }
 }

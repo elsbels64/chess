@@ -15,7 +15,7 @@ public class MySQLUserDAO implements UserDAO{
 
 
     public MySQLUserDAO() throws DataAccessException {
-        configureDatabase();
+        DatabaseManager.configureDatabase(createStatement);
     }
 
     @Override
@@ -65,7 +65,9 @@ public class MySQLUserDAO implements UserDAO{
         executeUpdate(statement);
     }
 
-    private int executeUpdate(String statement, Object... params) throws DataAccessException { //... means you can have as many parameters as you want and it's just gonna put them on params
+    private int executeUpdate(String statement, Object... params)
+            throws DataAccessException {
+        //... means you can have as many parameters as you want and it's just gonna put them on params
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 for (var i = 0; i < params.length; i++) {
@@ -87,7 +89,7 @@ public class MySQLUserDAO implements UserDAO{
 
 
 
-    private final String createStatements =
+    private final String createStatement =
             """
             CREATE TABLE IF NOT EXISTS  users (
               `username` varchar(256) NOT NULL,
@@ -97,16 +99,4 @@ public class MySQLUserDAO implements UserDAO{
             )
             """
     ;
-
-
-    private void configureDatabase() throws DataAccessException, DataAccessException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(createStatements)) {
-                preparedStatement.executeUpdate();
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
-        }
-    }
 }

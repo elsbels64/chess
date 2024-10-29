@@ -77,7 +77,8 @@ public class Service {
         return gameID;
     }
 
-    public void joinGame(String authToken,  int gameID, String playerColor) throws UnauthorizedException, AlreadyTakenException, BadRequestException, DataAccessException {
+    public void joinGame(String authToken,  int gameID, String playerColor)
+            throws UnauthorizedException, AlreadyTakenException, BadRequestException, DataAccessException {
         if(playerColor==null){
             throw new BadRequestException("no player color provided.");
         }

@@ -15,7 +15,9 @@ public class DatabaseManager {
     static {
         try {
             try (var propStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("db.properties")) {
-                if (propStream == null) throw new Exception("Unable to load db.properties");
+                if (propStream == null) {
+                    throw new Exception("Unable to load db.properties");
+                }
                 Properties props = new Properties();
                 props.load(propStream);
                 DATABASE_NAME = props.getProperty("db.name");
@@ -65,6 +67,17 @@ public class DatabaseManager {
             return conn;
         } catch (SQLException e) {
             throw new DataAccessException(e.getMessage());
+        }
+    }
+
+    public static void configureDatabase(String createStatement) throws DataAccessException, DataAccessException {
+        DatabaseManager.createDatabase();
+        try (var conn = DatabaseManager.getConnection()) {
+            try (var preparedStatement = conn.prepareStatement(createStatement)) {
+                preparedStatement.executeUpdate();
+            }
+        } catch (SQLException ex) {
+            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
         }
     }
 }

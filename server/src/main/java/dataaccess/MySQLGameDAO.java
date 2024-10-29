@@ -10,7 +10,7 @@ import java.util.List;
 
 public class MySQLGameDAO implements GameDAO{
     public MySQLGameDAO() throws DataAccessException {
-        configureDatabase();
+        DatabaseManager.configureDatabase(createStatement);
     }
 
     @Override
@@ -117,7 +117,7 @@ public class MySQLGameDAO implements GameDAO{
         }
     }
 
-    private final String createStatements =
+    private final String createStatement =
             """
             CREATE TABLE IF NOT EXISTS games(
               `gameID` int NOT NULL,
@@ -128,16 +128,4 @@ public class MySQLGameDAO implements GameDAO{
               PRIMARY KEY (`gameID`)
             ) 
             """;
-
-
-    private void configureDatabase() throws DataAccessException, DataAccessException {
-        DatabaseManager.createDatabase();
-        try (var conn = DatabaseManager.getConnection()) {
-            try (var preparedStatement = conn.prepareStatement(createStatements)) {
-                preparedStatement.executeUpdate();
-            }
-        } catch (SQLException ex) {
-            throw new DataAccessException(String.format("Unable to configure database: %s", ex.getMessage()));
-        }
-    }
 }
