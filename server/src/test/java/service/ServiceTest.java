@@ -132,8 +132,8 @@ public class ServiceTest {
         Assertions.assertDoesNotThrow(()->gameDataAccess.getGame(gameID2));
         var gameData2 = gameDataAccess.getGame(gameID2);
         var games = service.getGames(authData.authToken());
-        Assertions.assertEquals(gameData1,games.get(1));
-        Assertions.assertEquals(gameData2,games.get(0));
+        Assertions.assertEquals(gameData1,games.getFirst());
+        Assertions.assertEquals(gameData2,games.get(1));
     }
 
     @Test
