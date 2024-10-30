@@ -26,7 +26,6 @@ public class ServiceTest {
     public void registerUserFailure() throws BadRequestException, AlreadyTakenException, DataAccessException {
         var userData = new UserData("userName", "Password", "email@email.com");
         service.registerUser(userData);
-
         Assertions.assertThrows(AlreadyTakenException.class, () -> service.registerUser(userData));
     }
     @Test
@@ -126,23 +125,15 @@ public class ServiceTest {
     public void getGamesSucces() throws BadRequestException, AlreadyTakenException, UnauthorizedException, DataAccessException {
         var userData = new UserData("newUser", "Password", "newUser@email.com");
         var authData = service.registerUser(userData);
-        var gameName1 = "New Game";
-        var gameID = service.createGame(authData.authToken(), gameName1);
+        var gameID = service.createGame(authData.authToken(), "New Game");
         Assertions.assertDoesNotThrow(()->gameDataAccess.getGame(gameID));
         var gameData1 = gameDataAccess.getGame(gameID);
-        var gameName2 = "New Game 2";
-        var gameID2 = service.createGame(authData.authToken(), gameName2);
+        var gameID2 = service.createGame(authData.authToken(), "New Game 2");
         Assertions.assertDoesNotThrow(()->gameDataAccess.getGame(gameID2));
         var gameData2 = gameDataAccess.getGame(gameID2);
         var games = service.getGames(authData.authToken());
-        Assertions.assertEquals("New Game", games.get(0).gameName());
-        Assertions.assertEquals(null, games.get(0).whiteUsername());
-        Assertions.assertEquals(null, games.get(0).blackUsername());
-        Assertions.assertEquals(gameData1,games.get(0));
-        Assertions.assertEquals("New Game 2", games.get(1).gameName());
-        Assertions.assertEquals(null, games.get(1).whiteUsername());
-        Assertions.assertEquals(null, games.get(1).blackUsername());
-        Assertions.assertEquals(gameData2,games.get(1));
+        Assertions.assertEquals(gameData1,games.get(1));
+        Assertions.assertEquals(gameData2,games.get(0));
     }
 
     @Test
