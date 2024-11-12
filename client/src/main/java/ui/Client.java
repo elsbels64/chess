@@ -1,7 +1,9 @@
 package ui;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 public interface Client {
-    State state = null;
+    State getState();
     String help();
     String eval(String line);
 }

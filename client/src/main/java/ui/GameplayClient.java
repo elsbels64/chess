@@ -18,6 +18,11 @@ public class GameplayClient implements Client{
     }
 
     @Override
+    public State getState() {
+        return state;
+    }
+
+    @Override
     public String help() {
         return "";
     }

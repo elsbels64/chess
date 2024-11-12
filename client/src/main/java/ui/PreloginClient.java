@@ -8,13 +8,18 @@ public class PreloginClient implements Client{
     private final Repl notificationHandler;
     private State state = State.LOGGED_OUT;
     private final String BLUE = EscapeSequences.SET_TEXT_COLOR_BLUE;
-    private final String GREY = EscapeSequences.SET_TEXT_COLOR_DARK_GREY;
+    private final String GREY = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
 
     public PreloginClient(String serverUrl, Repl notificationHandler) {
         this.serverUrl = serverUrl;
         this.notificationHandler = notificationHandler;
     }
 
+
+    @Override
+    public State getState() {
+        return state;
+    }
 
     @Override
     public String help() {

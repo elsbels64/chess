@@ -16,6 +16,11 @@ public class PostloginClient implements Client{
     }
 
     @Override
+    public State getState() {
+        return state;
+    }
+
+    @Override
     public String help() {
         String help = GREEN + "create <NAME> ";
         help += GREY + "- creates a new game with the provided game name\n";
