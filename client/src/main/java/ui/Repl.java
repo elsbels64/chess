@@ -1,5 +1,7 @@
 package ui;
 
+import serverFacade.ServerFacade;
+
 import java.util.Scanner;
 
 import static ui.State.LOGGED_IN;
@@ -11,9 +13,11 @@ public class Repl {
     private final String BLUE = EscapeSequences.SET_TEXT_COLOR_BLUE;
     private final String GREEN = EscapeSequences.SET_TEXT_COLOR_GREEN;
     private final String RESET = EscapeSequences.RESET_TEXT_COLOR;
+    ServerFacade serverFacade;
 
     public Repl(String serverUrl) {
-        preloginClient = new PreloginClient(serverUrl, this);
+        serverFacade = new ServerFacade(serverUrl);
+        preloginClient = new PreloginClient(serverUrl, this, serverFacade);
         postloginClient = new PostloginClient(serverUrl, this);
         client = preloginClient;
     }
@@ -27,11 +31,9 @@ public class Repl {
         while (!result.equals("quit")) {
             printPrompt();
             String line = scanner.nextLine();
-            System.out.println("Debug: line = " + line);
 
             try {
                 result = client.eval(line);
-                System.out.println("Debug: result = " + result);
                 System.out.print(BLUE + result);
                 if(client.getState() == LOGGED_IN){
                     client = postloginClient;

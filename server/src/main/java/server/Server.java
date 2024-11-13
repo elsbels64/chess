@@ -62,16 +62,16 @@ public class Server {
         var g = new Gson();
         var newUser = g.fromJson(
             String.valueOf(req.body()), UserData.class);
-        var resUserData = service.registerUser(newUser);
-        return g.toJson(resUserData);
+        var resAuthData = service.registerUser(newUser);
+        return g.toJson(resAuthData);
     }
 
     private String loginUser(Request req, Response res) throws BadRequestException, UnauthorizedException, DataAccessException {
         var g = new Gson();
         var user = g.fromJson(
                 String.valueOf(req.body()), UserData.class);
-        var resUserData = service.loginUser(user);
-        return g.toJson(resUserData);
+        var resAuthData = service.loginUser(user);
+        return g.toJson(resAuthData);
     }
 
     private String clearAllData(Request req, Response res) throws DataAccessException {

@@ -1,6 +1,9 @@
 package serverFacade;
 
 import com.google.gson.Gson;
+import model.AuthData;
+import model.UserData;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -8,6 +11,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.Objects;
 
 public class ServerFacade {
 
@@ -17,15 +21,51 @@ public class ServerFacade {
         serverUrl = url;
     }
 
+    public String registerUser(String username, String password, String email) {
+        var g = new Gson();
+        UserData userData = new UserData(username, password, email);
 
+        try{
+            AuthData authData = makeRequest("POST","/user", userData, AuthData.class, "" );
+            return authData.authToken();
+        }catch(Exception ex) {
+            if(Objects.equals(ex.getMessage(), "403")){
+                return "failure: that user already exists";
+            }
+            if(Objects.equals(ex.getMessage(), "400")){
+                return "failure: one of your inputs was empty that shouldn't have been";
+            }
+            return "failure: something went wrong on our end";
+        }
+    }
 
+    public String loginUser(String username, String password) {
+        var g = new Gson();
+        UserData userData = new UserData(username, password, null);
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws Exception {
+        try{
+            AuthData authData = makeRequest("POST","/user", userData, AuthData.class, "" );
+            return authData.authToken();
+        }catch(Exception ex) {
+            if(Objects.equals(ex.getMessage(), "401")){
+                return "failure: username or password was wrong";
+            }
+            return "failure: something went wrong on our end";
+        }
+    }
+
+    private <T> T makeRequest(String method, String path, Object request,  Class<T> responseClass, String header) throws Exception {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
+
+            if(!header.equals("")){
+            http.setRequestProperty("Authorization", header);
+            http.setRequestProperty("Content-Type", "application/json"); // Assuming JSON body format
+            http.setRequestProperty("Accept", "application/json");
+            }
 
             writeBody(request, http);
             http.connect();
@@ -50,7 +90,7 @@ public class ServerFacade {
     private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, Exception {
         var status = http.getResponseCode();
         if (!isSuccessful(status)) {
-            throw new Exception("failure: " + status);
+            throw new Exception(""+status);
         }
     }
 
