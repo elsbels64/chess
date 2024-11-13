@@ -44,7 +44,7 @@ public class ServerFacade {
         UserData userData = new UserData(username, password, null);
 
         try{
-            AuthData authData = makeRequest("POST","/user", userData, AuthData.class, "" );
+            AuthData authData = makeRequest("POST","/session", userData, AuthData.class, "" );
             return authData.authToken();
         }catch(Exception ex) {
             if(Objects.equals(ex.getMessage(), "401")){

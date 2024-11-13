@@ -25,10 +25,18 @@ public class ServerFacadeTests {
 
 
     @Test
-    public void registerUserTest() throws Exception {
+    public void registerUserTest() {
         String auth = serverFacade.registerUser("username", "password", "email");
         System.out.println(auth);
         Assertions.assertNotNull(auth);
+    }
+
+    @Test
+    public void loginUserTest() {
+        String auth = serverFacade.loginUser("username", "password");
+        System.out.println(auth);
+        Assertions.assertNotNull(auth);
+        Assertions.assertFalse(auth.startsWith("failure: "));
     }
 
 }

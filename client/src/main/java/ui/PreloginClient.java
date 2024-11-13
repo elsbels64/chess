@@ -48,12 +48,17 @@ public class PreloginClient implements Client{
         if(registerResult.startsWith("failure: ")){
             return RED + registerResult;
         }
+        state = State.LOGGED_IN;
         return registerResult;
     }
 
     private String login(String[] commandArray){
+        String result = serverFacade.loginUser(commandArray[1],commandArray[2]);
+        if(result.startsWith("failure: ")){
+            return RED + result;
+        }
         state = State.LOGGED_IN;
-        return "";
+        return result;
     }
 
     private String quit(){
@@ -75,22 +80,22 @@ public class PreloginClient implements Client{
         }
         else if(commandArray[0].equals("login")){
             if(commandArray.length>3){
-                return RED + "hey babe just letting you know that's wayyyy too many arguments <3.\nhere are the allowed commands\n" + help();
+                return RED + "too many arguments <3.\nhere are the allowed commands\n" + help();
             }
             if(commandArray.length<3){
-                return RED + "hey babe just letting you're being a TINY bit stingy on the arguments <3.\nhere are the allowed commands\n" + help();
+                return RED + "not enough arguments <3.\nhere are the allowed commands\n" + help();
             }
             return login(commandArray);
         }
         else if(commandArray[0].equals("register")){
             if(commandArray.length>4){
-                return RED + "hey babe just letting you know that's wayyyy too many arguments <3.\nhere are the allowed commands\n" + help();
+                return RED + "too many arguments <3.\nhere are the allowed commands\n" + help();
             }
             if(commandArray.length<4){
-                return RED + "hey babe just letting you're being a TINY bit stingy on the arguments <3.\nhere are the allowed commands\n" + help();
+                return RED + "not enough arguments <3.\nhere are the allowed commands\n" + help();
             }
             return register(commandArray);
         }
-        return RED + "that an allowed command.\nhere are the allowed commands:\n" + help();
+        return RED + "that isn not an allowed command.\nhere are the allowed commands:\n" + help();
     }
 }

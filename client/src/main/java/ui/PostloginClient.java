@@ -32,16 +32,24 @@ public class PostloginClient implements Client{
         help += GREY + "- joins a game as an observer\n";
         help += GREEN + "logout ";
         help += GREY + "- logs you out of chess\n";
-        help += GREEN + "quit ";
-        help += GREY + "- playing chess";
         help += GREEN + "help ";
         help += GREY + "- possible commands\n";
 
         return help;
     }
 
+    private String quit(){
+        return "quit";
+    }
+
     @Override
     public String eval(String line) {
+        state = State.LOGGED_OUT;
+        String[] commandArray = line.split("\\s+");
+
+        if(commandArray[0].equals("quit")){
+            return quit();
+        }
         return "";
     }
 }
