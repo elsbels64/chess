@@ -39,4 +39,14 @@ public class ServerFacadeTests {
         Assertions.assertFalse(auth.startsWith("failure: "));
     }
 
+    @Test
+    public void logoutUserTest() {
+        String auth = serverFacade.loginUser("username", "password");
+        System.out.println(auth);
+        Assertions.assertNotNull(auth);
+        Assertions.assertFalse(auth.startsWith("failure: "));
+        String result = serverFacade.logoutUser(auth);
+        Assertions.assertEquals("{}", result);
+    }
+
 }

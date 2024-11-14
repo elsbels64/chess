@@ -22,7 +22,6 @@ public class ServerFacade {
     }
 
     public String registerUser(String username, String password, String email) {
-        var g = new Gson();
         UserData userData = new UserData(username, password, email);
 
         try{
@@ -40,7 +39,6 @@ public class ServerFacade {
     }
 
     public String loginUser(String username, String password) {
-        var g = new Gson();
         UserData userData = new UserData(username, password, null);
 
         try{
@@ -49,6 +47,18 @@ public class ServerFacade {
         }catch(Exception ex) {
             if(Objects.equals(ex.getMessage(), "401")){
                 return "failure: username or password was wrong";
+            }
+            return "failure: something went wrong on our end";
+        }
+    }
+
+    public String logoutUser(String authToken) {
+        try{
+            Object result = makeRequest("DELETE","/session", null, Object.class, authToken);
+            return "You have been successfully logged out";
+        }catch(Exception ex) {
+            if(Objects.equals(ex.getMessage(), "401")){
+                return "failure: you are not actually logged in";
             }
             return "failure: something went wrong on our end";
         }
