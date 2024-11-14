@@ -2,6 +2,9 @@ package ui;
 
 import serverFacade.ServerFacade;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PostloginClient implements Client{
 
     private String visitorName = null;
@@ -12,7 +15,7 @@ public class PostloginClient implements Client{
     private final String GREEN = EscapeSequences.SET_TEXT_COLOR_GREEN;
     private final String GREY = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
     private final String RED = EscapeSequences.SET_TEXT_COLOR_RED;
-
+    private List<Integer> intList = new ArrayList<>();
 
     public PostloginClient(String serverUrl, Repl notificationHandler, ServerFacade serverFacade) {
         this.serverUrl = serverUrl;
@@ -56,6 +59,14 @@ public class PostloginClient implements Client{
         return result;
     }
 
+    private String createGame(String[] commandArray, String authToken) {
+        String result = serverFacade.createGame(commandArray[1], authToken);
+        if(result.startsWith("failure: ")){
+            return RED + result;
+        }
+        return result;
+    }
+
     @Override
     public String eval(String line) {
         state = State.LOGGED_IN;
@@ -66,6 +77,15 @@ public class PostloginClient implements Client{
         }
         else if(commandArray[0].equals("logout")){
             return logout(notificationHandler.getAuthToken());
+        }
+        else if(commandArray[0].equals("create")){
+            if(commandArray.length>2){
+                return RED + "too many arguments <3.\nhere are the allowed commands\n" + help();
+            }
+            if(commandArray.length<2){
+                return RED + "you need a game name as well\nhere are the allowed commands\n" + help();
+            }
+            return createGame(commandArray, notificationHandler.getAuthToken());
         }
         return "";
     }

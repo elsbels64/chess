@@ -1,8 +1,7 @@
 package serverFacade;
 
 import com.google.gson.Gson;
-import model.AuthData;
-import model.UserData;
+import model.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -59,6 +58,22 @@ public class ServerFacade {
         }catch(Exception ex) {
             if(Objects.equals(ex.getMessage(), "401")){
                 return "failure: you are not actually logged in";
+            }
+            return "failure: something went wrong on our end";
+        }
+    }
+
+    public String createGame(String gameName, String authToken) {
+        GameName gameNameObj = new GameName(gameName);
+        try{
+            GameID gameID = makeRequest("POST","/game", gameNameObj, GameID.class, authToken );
+            return "" + gameID.gameID();
+        }catch(Exception ex) {
+            if(Objects.equals(ex.getMessage(), "401")){
+                return "failure: you don't have the required authorization";
+            }
+            if(Objects.equals(ex.getMessage(), "400")){
+                return "failure: one of your inputs was empty that shouldn't have been";
             }
             return "failure: something went wrong on our end";
         }
