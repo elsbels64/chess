@@ -49,4 +49,15 @@ public class ServerFacadeTests {
         Assertions.assertEquals("{}", result);
     }
 
+    @Test
+    public void listGameTest() {
+        String auth = serverFacade.loginUser("username", "password");
+        System.out.println(auth);
+        Assertions.assertNotNull(auth);
+        Assertions.assertFalse(auth.startsWith("failure: "));
+        String result = serverFacade.listGames(auth);
+        Assertions.assertFalse(auth.startsWith("failure: "));
+//        Assertions.assertEquals("{}", result);
+    }
+
 }

@@ -1,5 +1,7 @@
 package ui;
 
+import chess.ChessGame;
+import model.GameData;
 import serverFacade.ServerFacade;
 
 import java.util.ArrayList;
@@ -67,6 +69,14 @@ public class PostloginClient implements Client{
         return result;
     }
 
+    private String listGames(String authToken) {
+        String games = serverFacade.listGames(authToken);
+        if(games.startsWith("failure: ")){
+            return RED + games;
+        }
+        return games;
+    }
+
     @Override
     public String eval(String line) {
         state = State.LOGGED_IN;
@@ -77,6 +87,9 @@ public class PostloginClient implements Client{
         }
         else if(commandArray[0].equals("logout")){
             return logout(notificationHandler.getAuthToken());
+        }
+        else if(commandArray[0].equals("list")){
+            return listGames(notificationHandler.getAuthToken());
         }
         else if(commandArray[0].equals("create")){
             if(commandArray.length>2){

@@ -1,6 +1,7 @@
 package serverFacade;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import model.*;
 
 import java.io.IOException;
@@ -10,6 +11,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.List;
 import java.util.Objects;
 
 public class ServerFacade {
@@ -79,6 +81,22 @@ public class ServerFacade {
         }
     }
 
+    public String listGames(String authToken) {
+        try{
+            TypeToken<List<GameData>> listType = new TypeToken<>() {};
+            record listGameDataResponse(GameData[] games) {
+            }
+            GameDataList gameDataListResponse= makeRequest("GET","/game", null, GameDataList.class, authToken );
+            List<GameData> gamesList= gameDataListResponse.games();
+            return gamesList.toString();
+        }catch(Exception ex) {
+            if(Objects.equals(ex.getMessage(), "401")){
+                return "failure: username or password was wrong";
+            }
+            return "failure: something went wrong on our end";
+        }
+    }
+
     private <T> T makeRequest(String method, String path, Object request,  Class<T> responseClass, String header) throws Exception {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
@@ -100,6 +118,8 @@ public class ServerFacade {
             throw new Exception(ex.getMessage());
         }
     }
+
+
 
 
     private static void writeBody(Object request, HttpURLConnection http) throws IOException {
@@ -126,6 +146,19 @@ public class ServerFacade {
                 InputStreamReader reader = new InputStreamReader(respBody);
                 if (responseClass != null) {
                     response = new Gson().fromJson(reader, responseClass);
+                }
+            }
+        }
+        return response;
+    }
+
+    public static <T> T readBody(HttpURLConnection http, TypeToken<T> responseType) throws IOException {
+        T response = null;
+        if (http.getContentLength() > 0) {
+            try (InputStream respBody = http.getInputStream()) {
+                InputStreamReader reader = new InputStreamReader(respBody);
+                if (responseType != null) {
+                    response = new Gson().fromJson(reader, responseType.getType());
                 }
             }
         }
