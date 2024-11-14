@@ -3,6 +3,7 @@ package ui;
 import chess.ChessGame;
 import model.GameData;
 import serverFacade.ServerFacade;
+import serverFacade.ServerFacadeListGamesReturn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ public class PostloginClient implements Client{
     private final String GREEN = EscapeSequences.SET_TEXT_COLOR_GREEN;
     private final String GREY = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
     private final String RED = EscapeSequences.SET_TEXT_COLOR_RED;
-    private List<Integer> intList = new ArrayList<>();
+    private List<Integer> gameIDs = new ArrayList<>();
 
     public PostloginClient(String serverUrl, Repl notificationHandler, ServerFacade serverFacade) {
         this.serverUrl = serverUrl;
@@ -70,11 +71,21 @@ public class PostloginClient implements Client{
     }
 
     private String listGames(String authToken) {
-        String games = serverFacade.listGames(authToken);
-        if(games.startsWith("failure: ")){
-            return RED + games;
+        ServerFacadeListGamesReturn response = serverFacade.listGames(authToken);
+        if(response.response().startsWith("failure: ")){
+            return RED + response.response();
         }
-        return games;
+        List<GameData> gamesList = response.gamesList();
+        StringBuilder gamesStr = new StringBuilder();
+        gameIDs = new ArrayList<>();
+        for(int i=0; i < gamesList.size(); i++){
+            GameData game = gamesList.get(i);
+            gameIDs.add(game.gameID());
+            gamesStr.append((i + 1)).append(": ").append(game.gameName()).append("\n");
+            gamesStr.append("\tWHITE player: ").append(game.whiteUsername()).append("\n");
+            gamesStr.append("\tBLACK player: ").append(game.blackUsername()).append("\n");
+        }
+        return gamesStr.toString();
     }
 
     @Override

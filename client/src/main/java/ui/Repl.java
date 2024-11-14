@@ -56,7 +56,6 @@ public class Repl {
                     System.out.print(BLUE + result);
                     if (client.getState() == LOGGED_IN) {
                         client = postloginClient;
-                        System.out.print(client.help());
                     }
                 }
             } catch (Throwable e) {

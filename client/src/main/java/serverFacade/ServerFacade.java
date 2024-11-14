@@ -1,7 +1,6 @@
 package serverFacade;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import model.*;
 
 import java.io.IOException;
@@ -20,6 +19,15 @@ public class ServerFacade {
 
     public ServerFacade(String url) {
         serverUrl = url;
+    }
+
+    public String clear() {
+        try{
+            makeRequest("DELETE","/db", null, Object.class, "");
+            return "cleared database";
+        }catch(Exception ex) {
+            return "failure: something went wrong on our end";
+        }
     }
 
     public String registerUser(String username, String password, String email) {
@@ -55,7 +63,7 @@ public class ServerFacade {
 
     public String logoutUser(String authToken) {
         try{
-            Object result = makeRequest("DELETE","/session", null, Object.class, authToken);
+            makeRequest("DELETE","/session", null, Object.class, authToken);
             return "You have been successfully logged out";
         }catch(Exception ex) {
             if(Objects.equals(ex.getMessage(), "401")){
@@ -81,19 +89,16 @@ public class ServerFacade {
         }
     }
 
-    public String listGames(String authToken) {
+    public ServerFacadeListGamesReturn listGames(String authToken) {
         try{
-            TypeToken<List<GameData>> listType = new TypeToken<>() {};
-            record listGameDataResponse(GameData[] games) {
-            }
             GameDataList gameDataListResponse= makeRequest("GET","/game", null, GameDataList.class, authToken );
             List<GameData> gamesList= gameDataListResponse.games();
-            return gamesList.toString();
+            return new ServerFacadeListGamesReturn("Success", gamesList);
         }catch(Exception ex) {
             if(Objects.equals(ex.getMessage(), "401")){
-                return "failure: username or password was wrong";
+                return new ServerFacadeListGamesReturn("failure: username or password was wrong", null);
             }
-            return "failure: something went wrong on our end";
+            return new ServerFacadeListGamesReturn("failure: something went wrong on our end", null);
         }
     }
 
@@ -104,10 +109,10 @@ public class ServerFacade {
             http.setRequestMethod(method);
             http.setDoOutput(true);
 
-            if(!header.equals("")){
-            http.setRequestProperty("Authorization", header);
-            http.setRequestProperty("Content-Type", "application/json"); // Assuming JSON body format
-            http.setRequestProperty("Accept", "application/json");
+            if(!header.isEmpty()){
+                http.setRequestProperty("Authorization", header);
+                http.setRequestProperty("Content-Type", "application/json"); // Assuming JSON body format
+                http.setRequestProperty("Accept", "application/json");
             }
 
             writeBody(request, http);
@@ -132,7 +137,7 @@ public class ServerFacade {
         }
     }
 
-    private void throwIfNotSuccessful(HttpURLConnection http) throws IOException, Exception {
+    private void throwIfNotSuccessful(HttpURLConnection http) throws Exception {
         var status = http.getResponseCode();
         if (!isSuccessful(status)) {
             throw new Exception(""+status);
@@ -146,19 +151,6 @@ public class ServerFacade {
                 InputStreamReader reader = new InputStreamReader(respBody);
                 if (responseClass != null) {
                     response = new Gson().fromJson(reader, responseClass);
-                }
-            }
-        }
-        return response;
-    }
-
-    public static <T> T readBody(HttpURLConnection http, TypeToken<T> responseType) throws IOException {
-        T response = null;
-        if (http.getContentLength() > 0) {
-            try (InputStream respBody = http.getInputStream()) {
-                InputStreamReader reader = new InputStreamReader(respBody);
-                if (responseType != null) {
-                    response = new Gson().fromJson(reader, responseType.getType());
                 }
             }
         }
