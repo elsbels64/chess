@@ -1,5 +1,6 @@
 package serverFacade;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import model.*;
 
@@ -10,12 +11,14 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class ServerFacade {
 
     private final String serverUrl;
+    List<GameData> gamesList= new ArrayList<>();
 
     public ServerFacade(String url) {
         serverUrl = url;
@@ -92,13 +95,33 @@ public class ServerFacade {
     public ServerFacadeListGamesReturn listGames(String authToken) {
         try{
             GameDataList gameDataListResponse= makeRequest("GET","/game", null, GameDataList.class, authToken );
-            List<GameData> gamesList= gameDataListResponse.games();
+            gamesList= new ArrayList<>();
+            gamesList= gameDataListResponse.games();
             return new ServerFacadeListGamesReturn("Success", gamesList);
         }catch(Exception ex) {
             if(Objects.equals(ex.getMessage(), "401")){
                 return new ServerFacadeListGamesReturn("failure: username or password was wrong", null);
             }
             return new ServerFacadeListGamesReturn("failure: something went wrong on our end", null);
+        }
+    }
+
+    public String joinGame(String color, int gameID, String authToken) {
+        try{
+            JoinGameRequest joinGameRequest = new JoinGameRequest(color, gameID);
+            Object response= makeRequest("PUT","/game", joinGameRequest, Object.class, authToken );
+            return "successfully joined game as " + color+ " player.";
+        }catch(Exception ex) {
+            if(Objects.equals(ex.getMessage(), "403")){
+                return "failure: there is already a user playing that color";
+            }
+            if(Objects.equals(ex.getMessage(), "401")){
+                return "failure: you did not login properly";
+            }
+            if(Objects.equals(ex.getMessage(), "400")){
+                return "failure: one of your inputs was empty that shouldn't have been";
+            }
+            return "failure: something went wrong on our end";
         }
     }
 

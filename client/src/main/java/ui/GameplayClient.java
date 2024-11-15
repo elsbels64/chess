@@ -2,8 +2,10 @@ package ui;
 
 import chess.ChessBoard;
 import chess.ChessGame;
+import serverFacade.ServerFacade;
 
 public class GameplayClient implements Client{
+    private final ServerFacade serverFacade;
     private String visitorName = null;
     private final String serverUrl;
     private final Repl notificationHandler;
@@ -12,9 +14,10 @@ public class GameplayClient implements Client{
     private final String BLUE = EscapeSequences.SET_TEXT_COLOR_BLUE;
     private final String GREY = EscapeSequences.SET_TEXT_COLOR_DARK_GREY;
 
-    public GameplayClient(String serverUrl, Repl notificationHandler) {
+    public GameplayClient(String serverUrl, Repl notificationHandler, ServerFacade serverFacade) {
         this.serverUrl = serverUrl;
         this.notificationHandler = notificationHandler;
+        this.serverFacade = serverFacade;
     }
 
     @Override
