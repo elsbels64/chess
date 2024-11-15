@@ -93,11 +93,13 @@ public class Service {
             }
             gameDataAccess.addWhiteUsername(username, gameID);
         }
-        if(playerColor.equals("BLACK")){
+        else if(playerColor.equals("BLACK")){
             if(gameData.blackUsername() != null){
                 throw new AlreadyTakenException("there is already a black player");
             }
             gameDataAccess.addBlackUsername(username, gameID);
+        }else{
+            throw new BadRequestException("Not a player color.");
         }
     }
 

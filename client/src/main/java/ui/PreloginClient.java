@@ -67,8 +67,8 @@ public class PreloginClient implements Client{
 
     @Override
     public String eval(String line) {
-        state = State.LOGGED_OUT;
         String[] commandArray = line.split("\\s+");
+        state = State.LOGGED_OUT;
         if(commandArray[0].equals("help")){
             if(commandArray.length>1){
                 return RED + "you technically put in too many arguments, but I'm gonna let it slide because you're such a cutie\n" + help();

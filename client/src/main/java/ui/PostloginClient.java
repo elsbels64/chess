@@ -143,7 +143,7 @@ public class PostloginClient implements Client{
         backgroundColors.add(EscapeSequences.SET_BG_COLOR_BROWN);
         boardString.append(backgroundColors.get((row+col)%2));
         if (board.getPiece(new ChessPosition(row, col)) == null) {
-            boardString.append("\u2003 \u202f\u202f");
+            boardString.append(EscapeSequences.EMPTY);
         } else {
             String WHITE = EscapeSequences.SET_TEXT_COLOR_WHITE;
             String BLACK = EscapeSequences.SET_TEXT_COLOR_BLACK;

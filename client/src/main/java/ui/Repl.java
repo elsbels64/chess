@@ -6,8 +6,7 @@ import serverFacade.ServerFacade;
 
 import java.util.Scanner;
 
-import static ui.State.IN_GAME;
-import static ui.State.LOGGED_IN;
+import static ui.State.*;
 
 public class Repl {
     private final PreloginClient preloginClient;
@@ -49,34 +48,26 @@ public class Repl {
             try {
                 String[] commandArray = line.split("\\s+");
                 String BLUE = EscapeSequences.SET_TEXT_COLOR_BLUE;
+                result = client.eval(line);
                 if(commandArray[0].equals("login")||commandArray[0].equals("register")){
-                    result = client.eval(line);
-                    if (client.getState() == LOGGED_IN) {
-                        System.out.println("you have been successfully logged in!\n");
-                        authToken = result;
-                        client = postloginClient;
-                        System.out.print(client.help());
+                    if (!result.startsWith(EscapeSequences.SET_TEXT_COLOR_RED)){
+                        if(client.getState()==LOGGED_IN){
+                            System.out.println("you have been successfully logged in!\n");
+                            authToken = result;
+                            client = postloginClient;
+                            System.out.print(client.help());
+                        }
                     }else{
-                        System.out.print(BLUE + result);
+                        System.out.print(result);
                     }
                 }
-                else if(commandArray[0].equals("join")||commandArray[0].equals("observe")){
-                    result = client.eval(line);
-                    if (client.getState() == IN_GAME) {
-                        System.out.println("you have been successfully logged in!\n");
-                        joinedGameID = postloginClient.joinedGameID;
-                        client = gameplayClient;
-                        System.out.print(client.help());
-                    }else{
-                        System.out.print(BLUE + result);
+                else if(commandArray[0].equals("logout")){
+                    if (client.getState() == LOGGED_OUT) {
+                        client = preloginClient;
                     }
-                }
-                else {
-                    result = client.eval(line);
-                    System.out.print(BLUE + result);
-                    if (client.getState() == LOGGED_IN) {
-                        client = postloginClient;
-                    }
+                    System.out.print(result + "\n");
+                }else{
+                    System.out.print(result + "\n");
                 }
             } catch (Throwable e) {
                 var msg = e.toString();
@@ -89,7 +80,7 @@ public class Repl {
     private void printPrompt() {
         String GREEN = EscapeSequences.SET_TEXT_COLOR_GREEN;
         String RESET = EscapeSequences.RESET_TEXT_COLOR;
-        System.out.print("\n" + RESET + client.getState() +">>> " + GREEN);
+        System.out.print("\n" + RESET +">>> " + GREEN);
     }
 
 }
