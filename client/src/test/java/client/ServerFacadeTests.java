@@ -16,6 +16,7 @@ public class ServerFacadeTests {
     private static Server server;
     private static ServerFacade serverFacade;
     private static List<GameData> gamesList = new ArrayList<>();
+    private static int gameID;
 
     @BeforeAll
     public static void init() {
@@ -31,7 +32,7 @@ public class ServerFacadeTests {
         String auth = serverFacade.registerUser("Elise", "password", "email");
         gamesList = new ArrayList<>();
         String GameIDStr = serverFacade.createGame("game1", auth);
-        int gameID = Integer.parseInt(GameIDStr);
+        gameID = Integer.parseInt(GameIDStr);
         gamesList.add(new GameData(gameID, null, null, "game1", new ChessGame()));
     }
 
@@ -49,6 +50,34 @@ public class ServerFacadeTests {
         ServerFacadeListGamesReturn responseAndGamesList = serverFacade.listGames(auth);
         Assertions.assertFalse(responseAndGamesList.response().startsWith("failure: "));
         Assertions.assertEquals(gamesList, responseAndGamesList.gamesList());
+    }
+
+    @Test
+    public void joinGameTest() {
+        String auth = serverFacade.loginUser("Elise", "password");
+        System.out.println(auth);
+        Assertions.assertNotNull(auth);
+        Assertions.assertFalse(auth.startsWith("failure: "));
+        ServerFacadeListGamesReturn responseAndGamesList = serverFacade.listGames(auth);
+        Assertions.assertFalse(responseAndGamesList.response().startsWith("failure: "));
+        Assertions.assertEquals(gamesList, responseAndGamesList.gamesList());
+        String response = serverFacade.joinGame("WHITE", gameID, auth);
+        Assertions.assertFalse(response.startsWith("failure: "));
+    }
+
+    @Test
+    public void joinGameFailureTest() {
+        String auth = serverFacade.loginUser("Elise", "password");
+        System.out.println(auth);
+        Assertions.assertNotNull(auth);
+        Assertions.assertFalse(auth.startsWith("failure: "));
+        ServerFacadeListGamesReturn responseAndGamesList = serverFacade.listGames(auth);
+        Assertions.assertFalse(responseAndGamesList.response().startsWith("failure: "));
+        Assertions.assertEquals(gamesList, responseAndGamesList.gamesList());
+        String response = serverFacade.joinGame("WHITE", gameID, auth);
+        Assertions.assertFalse(response.startsWith("failure: "));
+        response = serverFacade.joinGame("WHITE", gameID, auth);
+        Assertions.assertTrue(response.startsWith("failure: "));
     }
 
     @Test

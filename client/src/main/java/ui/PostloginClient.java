@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 public class PostloginClient implements Client{
-
-    private String visitorName = null;
     private final String serverUrl;
     private final Repl notificationHandler;
     private ServerFacade serverFacade;
