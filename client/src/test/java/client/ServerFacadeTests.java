@@ -107,6 +107,14 @@ public class ServerFacadeTests {
     }
 
     @Test
+    public void registerUserFailureNoUsernameTest() {
+        String auth = serverFacade.registerUser(null, "password", "email");
+        System.out.println(auth);
+        Assertions.assertNotNull(auth);
+        Assertions.assertTrue(auth.startsWith("failure: "));
+    }
+
+    @Test
     public void loginUserTest() {
         String auth = serverFacade.loginUser("Elise", "password");
         System.out.println(auth);

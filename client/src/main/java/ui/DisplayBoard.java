@@ -11,12 +11,12 @@ import java.util.Map;
 
 public class DisplayBoard {
     final static Map<ChessPiece.PieceType, String> TYPE_TO_CHAR_MAP = Map.of(
-            ChessPiece.PieceType.PAWN, " ♟ ",
-            ChessPiece.PieceType.KNIGHT, " ♞ ",
-            ChessPiece.PieceType.BISHOP, " ♝ ",
-            ChessPiece.PieceType.ROOK, " ♜ ",
-            ChessPiece.PieceType.QUEEN," ♛ ",
-            ChessPiece.PieceType.KING, " ♚ "
+            ChessPiece.PieceType.PAWN, " P ",
+            ChessPiece.PieceType.KNIGHT, " N ",
+            ChessPiece.PieceType.BISHOP, " B ",
+            ChessPiece.PieceType.ROOK, " R ",
+            ChessPiece.PieceType.QUEEN," Q ",
+            ChessPiece.PieceType.KING, " K "
     );
 
     private void setSpace(ChessBoard board, StringBuilder boardString, int row, int col) {
@@ -25,13 +25,13 @@ public class DisplayBoard {
         backgroundColors.add(EscapeSequences.SET_BG_COLOR_BROWN);
         boardString.append(backgroundColors.get((row+col)%2));
         if (board.getPiece(new ChessPosition(row, col)) == null) {
-            boardString.append(EscapeSequences.EMPTY);
+            boardString.append("   ");
         } else {
-            String WHITE = EscapeSequences.SET_TEXT_COLOR_WHITE;
-            String BLACK = EscapeSequences.SET_TEXT_COLOR_BLACK;
+            String white = EscapeSequences.SET_TEXT_COLOR_WHITE;
+            String black = EscapeSequences.SET_TEXT_COLOR_BLACK;
             String color = board.getPiece(new ChessPosition(row, col)).getTeamColor() == ChessGame.TeamColor.WHITE
-                    ? WHITE
-                    : BLACK;
+                    ? white
+                    : black;
             boardString.append(color);
             boardString.append(TYPE_TO_CHAR_MAP.get(board.getPiece(new ChessPosition(row, col)).getPieceType()));
         }

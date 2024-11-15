@@ -113,7 +113,8 @@ public class PostloginClient implements Client{
 //                state = State.IN_GAME; // this switches the state to IN_GAME which
                 //            makes it possible for the repl to switch to the gameplay client
                 joinedGameID = gameID;
-                return displayBoard.printGameBlack(game.getBoard()) + "\n\n\n" + displayBoard.printGameWhite(game.getBoard());
+                return displayBoard.printGameBlack(game.getBoard()) + "\n\n\n"
+                        + displayBoard.printGameWhite(game.getBoard());
             }catch(NumberFormatException ex){
                 return red + "gameID needs to be an integer\n" + commandArray[1] + " is not an integer"+
                         "\nCall list games to see the available game numbers\n" +
@@ -132,7 +133,8 @@ public class PostloginClient implements Client{
             ChessGame game = chessGamesList.get(gameIDInteger);
 //            state = State.IN_GAME; // this switches the state to IN_GAME which makes it possible for the repl to switch to the gameplay client
             joinedGameID = gameID;
-            return "observing game #" + commandArray[1] + "\n" + displayBoard.printGameBlack(game.getBoard()) + "\n\n\n" + displayBoard.printGameWhite(game.getBoard());
+            return "observing game #" + commandArray[1] + "\n" + displayBoard.printGameBlack(game.getBoard()) +
+                    "\n\n\n" + displayBoard.printGameWhite(game.getBoard());
             }catch(NumberFormatException ex){
                 return red + "gameID needs to be an integer\n" + commandArray[1] + " is not an integer"+
                         "\nCall list games to see the available game numbers\n" +
