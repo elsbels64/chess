@@ -2,7 +2,7 @@ package ui;
 
 import chess.ChessBoard;
 import chess.ChessGame;
-import serverFacade.ServerFacade;
+import serverfacade.ServerFacade;
 
 public class GameplayClient implements Client{
     private final ServerFacade serverFacade;
@@ -11,8 +11,6 @@ public class GameplayClient implements Client{
     private final Repl notificationHandler;
     private State state = State.LOGGED_OUT;
     private ChessGame chessGame = null; // I might change this to just a string of the board later
-    private final String BLUE = EscapeSequences.SET_TEXT_COLOR_BLUE;
-    private final String GREY = EscapeSequences.SET_TEXT_COLOR_DARK_GREY;
 
     public GameplayClient(String serverUrl, Repl notificationHandler, ServerFacade serverFacade) {
         this.serverUrl = serverUrl;
@@ -32,10 +30,6 @@ public class GameplayClient implements Client{
 
     @Override
     public String eval(String line) {
-        return "";
-    }
-
-    private String printBoard(ChessBoard board){
         return "";
     }
 }

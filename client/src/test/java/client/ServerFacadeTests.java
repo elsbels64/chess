@@ -4,8 +4,8 @@ import chess.ChessGame;
 import model.GameData;
 import org.junit.jupiter.api.*;
 import server.Server;
-import serverFacade.ServerFacade;
-import serverFacade.ServerFacadeListGamesReturn;
+import serverfacade.ServerFacade;
+import serverfacade.ServerFacadeListGamesReturn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,12 +27,12 @@ public class ServerFacadeTests {
     }
 
     @BeforeEach
-    public void SetUp() {
+    public void setUp() {
         serverFacade.clear();
         String auth = serverFacade.registerUser("Elise", "password", "email");
         gamesList = new ArrayList<>();
-        String GameIDStr = serverFacade.createGame("game1", auth);
-        gameID = Integer.parseInt(GameIDStr);
+        String gameIDStr = serverFacade.createGame("game1", auth);
+        gameID = Integer.parseInt(gameIDStr);
         gamesList.add(new GameData(gameID, null, null, "game1", new ChessGame()));
     }
 

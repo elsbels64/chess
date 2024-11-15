@@ -1,8 +1,7 @@
 package ui;
 
 import chess.ChessBoard;
-import chess.ChessGame;
-import serverFacade.ServerFacade;
+import serverfacade.ServerFacade;
 
 import java.util.Scanner;
 
@@ -16,6 +15,7 @@ public class Repl {
     private String authToken;
     ServerFacade serverFacade;
     int joinedGameID;
+    DisplayBoard displayBoard = new DisplayBoard();
 
     public Repl(String serverUrl) {
         serverFacade = new ServerFacade(serverUrl);
@@ -36,8 +36,8 @@ public class Repl {
 
         var board = new ChessBoard();
         board.resetBoard();
-        System.out.print(postloginClient.printGameBlack(board));
-        System.out.print(postloginClient.printGameWhite(board));
+        System.out.print(displayBoard.printGameBlack(board));
+        System.out.print(displayBoard.printGameWhite(board));
 
         Scanner scanner = new Scanner(System.in); // accepts input every enter
         var result = "";
@@ -47,16 +47,13 @@ public class Repl {
 
             try {
                 String[] commandArray = line.split("\\s+");
-                String BLUE = EscapeSequences.SET_TEXT_COLOR_BLUE;
                 result = client.eval(line);
                 if(commandArray[0].equals("login")||commandArray[0].equals("register")){
-                    if (!result.startsWith(EscapeSequences.SET_TEXT_COLOR_RED)){
-                        if(client.getState()==LOGGED_IN){
+                    if(client.getState()==LOGGED_IN){
                             System.out.println("you have been successfully logged in!\n");
                             authToken = result;
                             client = postloginClient;
                             System.out.print(client.help());
-                        }
                     }else{
                         System.out.print(result);
                     }
@@ -78,9 +75,9 @@ public class Repl {
     }
 
     private void printPrompt() {
-        String GREEN = EscapeSequences.SET_TEXT_COLOR_GREEN;
-        String RESET = EscapeSequences.RESET_TEXT_COLOR;
-        System.out.print("\n" + RESET +">>> " + GREEN);
+        String green = EscapeSequences.SET_TEXT_COLOR_GREEN;
+        String reset = EscapeSequences.RESET_TEXT_COLOR;
+        System.out.print("\n" + reset +">>> " + green);
     }
 
 }
