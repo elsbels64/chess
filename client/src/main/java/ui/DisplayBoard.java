@@ -23,7 +23,7 @@ public class DisplayBoard {
         List<String> backgroundColors = new ArrayList<>();
         backgroundColors.add(EscapeSequences.SET_BG_COLOR_LIGHT_BROWN);
         backgroundColors.add(EscapeSequences.SET_BG_COLOR_BROWN);
-        boardString.append(backgroundColors.get((row+col)%2));
+        boardString.append(backgroundColors.get((row+col+1)%2));
         if (board.getPiece(new ChessPosition(row, col)) == null) {
             boardString.append("   ");
         } else {
