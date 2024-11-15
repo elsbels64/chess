@@ -15,9 +15,6 @@ public class Repl {
     private final GameplayClient gameplayClient;
     private Client client;
     private String authToken;
-    private final String BLUE = EscapeSequences.SET_TEXT_COLOR_BLUE;
-    private final String GREEN = EscapeSequences.SET_TEXT_COLOR_GREEN;
-    private final String RESET = EscapeSequences.RESET_TEXT_COLOR;
     ServerFacade serverFacade;
     int joinedGameID;
 
@@ -51,6 +48,7 @@ public class Repl {
 
             try {
                 String[] commandArray = line.split("\\s+");
+                String BLUE = EscapeSequences.SET_TEXT_COLOR_BLUE;
                 if(commandArray[0].equals("login")||commandArray[0].equals("register")){
                     result = client.eval(line);
                     if (client.getState() == LOGGED_IN) {
@@ -89,6 +87,8 @@ public class Repl {
     }
 
     private void printPrompt() {
+        String GREEN = EscapeSequences.SET_TEXT_COLOR_GREEN;
+        String RESET = EscapeSequences.RESET_TEXT_COLOR;
         System.out.print("\n" + RESET + client.getState() +">>> " + GREEN);
     }
 

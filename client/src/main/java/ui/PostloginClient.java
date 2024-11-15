@@ -16,13 +16,9 @@ import java.util.Map;
 public class PostloginClient implements Client{
     private final String serverUrl;
     private final Repl notificationHandler;
-    private ServerFacade serverFacade;
+    private final ServerFacade serverFacade;
     private State state = State.LOGGED_IN;
-    private final String GREEN = EscapeSequences.SET_TEXT_COLOR_GREEN;
-    private final String GREY = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
     private final String RED = EscapeSequences.SET_TEXT_COLOR_RED;
-    private final String WHITE = EscapeSequences.SET_TEXT_COLOR_WHITE;
-    private final String BLACK = EscapeSequences.SET_TEXT_COLOR_BLACK;
     private List<Integer> gameIDs = new ArrayList<>();
     private List<ChessGame> chessGamesList = new ArrayList<>();
     public int joinedGameID = 0;
@@ -40,7 +36,9 @@ public class PostloginClient implements Client{
 
     @Override
     public String help() {
+        String GREEN = EscapeSequences.SET_TEXT_COLOR_GREEN;
         String help = GREEN + "\ncreate <NAME> ";
+        String GREY = EscapeSequences.SET_TEXT_COLOR_LIGHT_GREY;
         help += GREY + "- creates a new game with the provided game name\n";
         help += GREEN + "list ";
         help += GREY + "- lists all the games\n";
@@ -147,6 +145,8 @@ public class PostloginClient implements Client{
         if (board.getPiece(new ChessPosition(row, col)) == null) {
             boardString.append("\u2003 \u202f\u202f");
         } else {
+            String WHITE = EscapeSequences.SET_TEXT_COLOR_WHITE;
+            String BLACK = EscapeSequences.SET_TEXT_COLOR_BLACK;
             String color = board.getPiece(new ChessPosition(row, col)).getTeamColor() == ChessGame.TeamColor.WHITE
                     ? WHITE
                     : BLACK;
