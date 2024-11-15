@@ -39,25 +39,63 @@ public class DisplayBoard {
 
     public String printGameBlack(ChessBoard board){
         StringBuilder boardString = new StringBuilder();
+        boardString.append("\n");
+        boardString.append(EscapeSequences.SET_BG_COLOR_WHITE);
+        boardString.append(EscapeSequences.SET_TEXT_COLOR_BLACK);
+        boardString.append("    h  g  f  e  d  c  b  a    ")
+                .append(EscapeSequences.RESET_BG_COLOR)
+                .append("\n");
+
         for (int row = 1; row <= 8; row++) {
-            for (int col = 1; col <= 8; col++) {
+            boardString.append(EscapeSequences.SET_BG_COLOR_WHITE);
+            boardString.append(EscapeSequences.SET_TEXT_COLOR_BLACK);
+            boardString.append(" ").append(row).append(" ");
+            for (int col = 8; col >= 1; col--) {
                 setSpace(board, boardString, row, col);
             }
+            boardString.append(EscapeSequences.SET_BG_COLOR_WHITE);
+            boardString.append(EscapeSequences.SET_TEXT_COLOR_BLACK);
+            boardString.append(" ").append(row).append(" ");
             boardString.append(EscapeSequences.RESET_BG_COLOR);
             boardString.append("\n");
         }
+
+        boardString.append(EscapeSequences.SET_BG_COLOR_WHITE);
+        boardString.append(EscapeSequences.SET_TEXT_COLOR_BLACK);
+        boardString.append("    h  g  f  e  d  c  b  a    ")
+                .append(EscapeSequences.RESET_BG_COLOR)
+                .append("\n");
         return String.valueOf(boardString);
     }
 
     public String printGameWhite(ChessBoard board){
         StringBuilder boardString = new StringBuilder();
+        boardString.append("\n");
+        boardString.append(EscapeSequences.SET_BG_COLOR_WHITE);
+        boardString.append(EscapeSequences.SET_TEXT_COLOR_BLACK);
+        boardString.append("    a  b  c  d  e  f  g  h    ")
+                .append(EscapeSequences.RESET_BG_COLOR)
+                .append("\n");
+
         for (int row = 8; row >= 1; row--) {
-            for (int col = 8; col >= 1; col--) {
+            boardString.append(EscapeSequences.SET_TEXT_COLOR_BLACK);
+            boardString.append(EscapeSequences.SET_BG_COLOR_WHITE);
+            boardString.append(" ").append(row).append(" ");
+            for (int col = 1; col <= 8; col++) {
                 setSpace(board, boardString, row, col);
             }
+            boardString.append(EscapeSequences.SET_BG_COLOR_WHITE);
+            boardString.append(EscapeSequences.SET_TEXT_COLOR_BLACK);
+            boardString.append(" ").append(row).append(" ");
             boardString.append(EscapeSequences.RESET_BG_COLOR);
             boardString.append("\n");
         }
+
+        boardString.append(EscapeSequences.SET_BG_COLOR_WHITE);
+        boardString.append(EscapeSequences.SET_TEXT_COLOR_BLACK);
+        boardString.append("    a  b  c  d  e  f  g  h    ")
+                .append(EscapeSequences.RESET_BG_COLOR)
+                .append("\n");
         return String.valueOf(boardString);
     }
 }
