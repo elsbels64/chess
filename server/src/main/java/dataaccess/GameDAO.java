@@ -22,5 +22,7 @@ public interface GameDAO {
 
     void addBlackUsername(String userName, int gameID) throws DataAccessException;
 
+    void updateGame(ChessGame chessGame, int gameID) throws DataAccessException;
+
     void deleteAll() throws DataAccessException;
 }

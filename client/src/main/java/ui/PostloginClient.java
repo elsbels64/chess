@@ -153,6 +153,9 @@ public class PostloginClient implements Client{
         if(commandArray[0].equals("quit")){
             return quit();
         }
+        else if(commandArray[0].equals("help")){
+            return help();
+        }
         else if(commandArray[0].equals("logout")){
             return logout(notificationHandler.getAuthToken());
         }

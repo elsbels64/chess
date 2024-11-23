@@ -48,6 +48,11 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
+    public void updateGame(ChessGame chessGame, int gameID) {
+
+    }
+
+    @Override
     public void deleteAll() {
         games.clear();
     }

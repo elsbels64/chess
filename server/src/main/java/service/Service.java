@@ -103,6 +103,21 @@ public class Service {
         }
     }
 
+    //update game data . there is an update sql command you can use
+    public void updateGame(String authToken, int gameID, ChessGame chessGame) throws BadRequestException, UnauthorizedException, DataAccessException {
+        if(chessGame==null){
+            throw new BadRequestException("no chessGame");
+        }
+        if(authToken==null){
+            throw new BadRequestException("no authToken");
+        }
+        if(gameDataAccess.getGame(gameID)==null){
+            throw new BadRequestException("wrong gameID");
+        }
+        checkAuthToken(authToken);
+        gameDataAccess.updateGame(chessGame, gameID);
+    }
+
     public static String generateAuthToken(){
         return UUID.randomUUID().toString();
     }
@@ -120,6 +135,5 @@ public class Service {
         authDataAccess.deleteAll();
         gameDataAccess.deleteAll();
     }
-
     //for game ID just generate a random number and use that as the gameID
 }

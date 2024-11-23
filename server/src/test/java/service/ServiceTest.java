@@ -1,6 +1,12 @@
 package service;
 
+import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPosition;
+import chess.InvalidMoveException;
+import com.google.gson.Gson;
 import dataaccess.*;
+import model.GameData;
 import model.UserData;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -198,6 +204,23 @@ public class ServiceTest {
         Assertions.assertThrows(AlreadyTakenException.class,
                 ()->service.joinGame(authData2.authToken(), gameID, "WHITE"),
                 "did not throw Already taken exception");
+    }
+
+    @Test
+    public void updateGame() throws BadRequestException, AlreadyTakenException, DataAccessException, UnauthorizedException, InvalidMoveException {
+        if(gameDataAccess instanceof MySQLGameDAO) {
+            var userData = new UserData("newUser", "Password", "newUser@email.com");
+            var authData = service.registerUser(userData);
+            var gameName = "New Game";
+            var gameID = service.createGame(authData.authToken(), gameName);
+            Assertions.assertNotNull(gameID);
+            Assertions.assertDoesNotThrow(() -> gameDataAccess.getGame(gameID));
+            ChessGame chessGame = new ChessGame();
+            chessGame.makeMove(new ChessMove(new ChessPosition(2, 1), new ChessPosition(3, 1)));
+            service.updateGame(authData.authToken(), gameID, chessGame);
+            GameData gameData = gameDataAccess.getGame(gameID);
+            Assertions.assertEquals(chessGame, gameData.game());
+        }
     }
 
 }
