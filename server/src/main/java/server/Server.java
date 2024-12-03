@@ -20,6 +20,7 @@ public class Server {
     private final WebSocketHandler webSocketHandler;
 
 
+
     public Server() {
         try{
             userDataAccess = new MySQLUserDAO();

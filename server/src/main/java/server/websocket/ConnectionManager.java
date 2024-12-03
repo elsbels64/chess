@@ -5,63 +5,34 @@ import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ConnectionManager {
-    public final ConcurrentHashMap<int, Connection> connections = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<Integer, List<Connection>> connections = new ConcurrentHashMap<>();
 
     public void add(int gameID, String visitorName, Session session) {
         var connection = new Connection(visitorName, session);
-        connections.put(gameID, connection);
+        connections.computeIfAbsent(gameID, k -> new CopyOnWriteArrayList<>()).add(connection);
     }
 
-    public void remove(String visitorName) {
-        connections.remove(visitorName);
+    public void removePlayer(int gameID, String username) {
+        List<Connection> connectionList = connections.get(gameID); // Get the list for the gameID
+        if (connectionList != null) { // Check if the list exists
+            connectionList.removeIf(connection -> connection.username.equals(username)); // Remove by username
+        }
     }
 
-    public void send_not_user(String excludeVisitorName, ServerMessage notification) throws IOException {
+    public void send_not_user(int gameID, String excludeUsername, ServerMessage notification) throws IOException {
         //broadcast is send to all
         var removeList = new ArrayList<Connection>();
-        for (var connection : connections.values()) {
+        List<Connection> connectionList = connections.get(gameID);
+        for (var connection : connectionList) {
             if (connection.session.isOpen()) {
-                if (!connection.visitorName.equals(excludeVisitorName)) {
-                    connection.send(notification.toString());
-                }
-            } else {
-                removeList.add(connection);
-            }
-        }
-
-        //you need something along this line before you send any message beucase if you try to
-        //send a message to someone that isn't there you will crash your whole program
-        // Clean up any connections that were left open.
-        for (var connection : removeList) {
-            connections.remove(connection.visitorName);
-        }
-    }
-
-    public void send_everyone( ServerMessage notification) throws IOException {
-        //broadcast is send to all
-        var removeList = new ArrayList<Connection>();
-        for (var connection : connections.values()) {
-            if (connection.session.isOpen()) {
-                connection.send(notification.toString());
-            } else {
-                removeList.add(connection);
-            }
-        }
-
-        for (var connection : removeList) {
-            connections.remove(connection.visitorName);
-        }
-    }
-
-    public void send_user(String excludeVisitorName, ServerMessage notification) throws IOException {
-        var removeList = new ArrayList<Connection>();
-        for (var connection : connections.values()) {
-            if (connection.session.isOpen()) {
-                if (connection.visitorName.equals(excludeVisitorName)) {
-                    connection.send(notification.toString());
+                if (!connection.username.equals(excludeUsername)) {
+                    connection.send(notification);
                 }
             } else {
                 removeList.add(connection);
@@ -69,7 +40,43 @@ public class ConnectionManager {
         }
 
         for (var connection : removeList) {
-            connections.remove(connection.visitorName);
+            removePlayer(gameID, connection.username);
+        }
+    }
+
+    public void send_everyone(int gameID, String excludeUsername, ServerMessage notification) throws IOException {
+        //broadcast is send to all
+        var removeList = new ArrayList<Connection>();
+        List<Connection> connectionList = connections.get(gameID);
+        for (var connection : connectionList) {
+            if (connection.session.isOpen()) {
+                connection.send(notification);
+            } else {
+                removeList.add(connection);
+            }
+        }
+
+        for (var connection : removeList) {
+            removePlayer(gameID, connection.username);
+        }
+    }
+
+    public void send_user(int gameID, String excludeUsername, ServerMessage notification) throws IOException {
+        //broadcast is send to all
+        var removeList = new ArrayList<Connection>();
+        List<Connection> connectionList = connections.get(gameID);
+        for (var connection : connectionList) {
+            if (connection.session.isOpen()) {
+                if (connection.username.equals(excludeUsername)) {
+                    connection.send(notification);
+                }
+            } else {
+                removeList.add(connection);
+            }
+        }
+
+        for (var connection : removeList) {
+            removePlayer(gameID, connection.username);
         }
     }
 }

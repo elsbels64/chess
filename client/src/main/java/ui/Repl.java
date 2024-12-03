@@ -1,6 +1,7 @@
 package ui;
 
 import chess.ChessBoard;
+import com.google.gson.Gson;
 import serverfacade.ServerFacade;
 import websocket.messages.ServerMessage;
 
@@ -11,18 +12,21 @@ import static ui.State.*;
 public class Repl {
     private final PreloginClient preloginClient;
     private final PostloginClient postloginClient;
-    private final GameplayClient gameplayClient;
+    private String serverUrl;
     private Client client;
     private String authToken;
     ServerFacade serverFacade;
-    int joinedGameID;
+    String joinedChessGame;
+    String userColor;
+    Integer joinedGameID;
     DisplayBoard displayBoard = new DisplayBoard();
 
     public Repl(String serverUrl) {
         serverFacade = new ServerFacade(serverUrl);
         preloginClient = new PreloginClient(serverUrl, this, serverFacade);
         postloginClient = new PostloginClient(serverUrl, this, serverFacade);
-        gameplayClient = new GameplayClient(serverUrl, this, serverFacade);
+//        gameplayClient = new GameplayClient(serverUrl, this, serverFacade);
+        this.serverUrl = serverUrl;
 
         client = preloginClient;
     }
@@ -51,10 +55,46 @@ public class Repl {
                 result = client.eval(line);
                 if(commandArray[0].equals("login")||commandArray[0].equals("register")){
                     if(client.getState()==LOGGED_IN){
-                            System.out.println("you have been successfully logged in!\n");
-                            authToken = result;
-                            client = postloginClient;
-                            System.out.print(client.help());
+                        System.out.println("you have been successfully logged in!\n");
+                        authToken = result;
+                        client = postloginClient;
+                        System.out.print(client.help());
+                    }else{
+                        System.out.print(result);
+                    }
+                }
+                if(commandArray[0].equals("join")){
+                    if(client.getState()==IN_GAME){
+                        userColor = commandArray[2];
+                        joinedGameID = postloginClient.joinedGameID;
+                        client = new GameplayClient(serverUrl, this, serverFacade);
+                        System.out.print(client.help());
+                        joinedChessGame = result;
+                        System.out.print(result);
+                    }else{
+                        System.out.print(result);
+                    }
+                }
+                if(commandArray[0].equals("observe")){
+                    if(client.getState()==IN_GAME){
+                        userColor = "observer";
+                        joinedGameID = postloginClient.joinedGameID;
+                        client = new GameplayClient(serverUrl, this, serverFacade);
+                        System.out.print(client.help());
+                        joinedChessGame = result;
+                        System.out.print(result);
+                    }else{
+                        System.out.print(result);
+                    }
+                }
+                if(commandArray[0].equals("leave")){
+                    if(client.getState()==LOGGED_IN){
+                        userColor = null;
+                        client = postloginClient;
+                        System.out.print(client.help());
+                        joinedChessGame = null;
+                        joinedGameID = null;
+                        System.out.print(result);
                     }else{
                         System.out.print(result);
                     }

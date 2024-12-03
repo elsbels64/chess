@@ -2,7 +2,6 @@ package serverfacade;
 
 import com.google.gson.Gson;
 import ui.Repl;
-import websocket.commands.ConnectCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
@@ -11,7 +10,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class websocketFacade {
+public class WebsocketFacade {
     //send a request to set up the connection with the server directly
     ///wslocal host stuff
     //have something that saves the session variable in the chessboard ui
@@ -20,11 +19,11 @@ public class websocketFacade {
     Repl repl;
 
 
-    public void webSocketFacade(String url, Repl repl) throws Exception {
+    public WebsocketFacade(String url, Repl repl) throws Exception {
+        this.repl = repl;
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
-            this.repl = repl;
 
             WebSocketContainer container = ContainerProvider.getWebSocketContainer();
             this.session = container.connectToServer(this, socketURI);
@@ -42,18 +41,27 @@ public class websocketFacade {
         }
     }
 
-    public void connect(String authToken) throws Exception {
+    public void connect(String authToken, int gameID) throws Exception {
         try {
-            var command = new ConnectCommand(authToken); //tells the server that someone just came in. action class is something that Prof wrote
+            var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID); //tells the server that someone just came in. action class is something that Prof wrote
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new Exception(ex.getMessage());
         }
     }
 
-    public void leavePetShop(String authToken) throws Exception {
+    public void makeMove(String authToken, int gameID) throws Exception {
         try {
-            var action = new UserGameCommand(authToken);
+            var command = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, authToken, gameID); //tells the server that someone just came in. action class is something that Prof wrote
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (IOException ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
+
+    public void leave(String authToken, int gameID) throws Exception {
+        try {
+            var action = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
             this.session.close();
         } catch (IOException ex) {
@@ -61,4 +69,13 @@ public class websocketFacade {
         }
     }
 
+    public void resign(String authToken, int gameID) throws Exception {
+        try {
+            var action = new UserGameCommand(UserGameCommand.CommandType.RESIGN, authToken, gameID);;
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+            this.session.close();
+        } catch (IOException ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
 }
