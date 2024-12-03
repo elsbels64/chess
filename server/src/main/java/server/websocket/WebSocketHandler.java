@@ -40,6 +40,7 @@ public class WebSocketHandler {
         if(authData==null){
             throw new UnauthorizedException("You do not have the correct authdata");
         }
+        //how can I find out what game ID they are trying to join
         connections.add(authData.username(), session);
         String message;
         //find a way to figure out if the person is connecting to observe or to play and what color they are playing as

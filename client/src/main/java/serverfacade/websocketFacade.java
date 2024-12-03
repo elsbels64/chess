@@ -2,6 +2,7 @@ package serverfacade;
 
 import com.google.gson.Gson;
 import ui.Repl;
+import websocket.commands.ConnectCommand;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
@@ -41,10 +42,10 @@ public class websocketFacade {
         }
     }
 
-    public void enterPetShop(String authToken) throws Exception {
+    public void connect(String authToken) throws Exception {
         try {
-            var action = new UserGameCommand(authToken); //tells the server that someone just came in. action class is something that Prof wrote
-            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+            var command = new ConnectCommand(authToken); //tells the server that someone just came in. action class is something that Prof wrote
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new Exception(ex.getMessage());
         }
