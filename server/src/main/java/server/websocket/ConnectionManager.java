@@ -13,25 +13,25 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class ConnectionManager {
     public final ConcurrentHashMap<Integer, List<Connection>> connections = new ConcurrentHashMap<>();
 
-    public void add(int gameID, String visitorName, Session session) {
-        var connection = new Connection(visitorName, session);
+    public void add(int gameID, Connection connection) {
+//        var connection = new Connection(authToken, session);
         connections.computeIfAbsent(gameID, k -> new CopyOnWriteArrayList<>()).add(connection);
     }
 
-    public void removePlayer(int gameID, String username) {
+    public void removePlayer(int gameID, String authToken) {
         List<Connection> connectionList = connections.get(gameID); // Get the list for the gameID
         if (connectionList != null) { // Check if the list exists
-            connectionList.removeIf(connection -> connection.username.equals(username)); // Remove by username
+            connectionList.removeIf(connection -> connection.authToken.equals(authToken)); // Remove by username
         }
     }
 
-    public void send_not_user(int gameID, String excludeUsername, ServerMessage notification) throws IOException {
+    public void send_not_user(int gameID, String excludeAuthToken, ServerMessage notification) throws IOException {
         //broadcast is send to all
         var removeList = new ArrayList<Connection>();
         List<Connection> connectionList = connections.get(gameID);
         for (var connection : connectionList) {
             if (connection.session.isOpen()) {
-                if (!connection.username.equals(excludeUsername)) {
+                if (!connection.authToken.equals(excludeAuthToken)) {
                     connection.send(notification);
                 }
             } else {
@@ -40,11 +40,11 @@ public class ConnectionManager {
         }
 
         for (var connection : removeList) {
-            removePlayer(gameID, connection.username);
+            removePlayer(gameID, connection.authToken);
         }
     }
 
-    public void send_everyone(int gameID, String excludeUsername, ServerMessage notification) throws IOException {
+    public void send_everyone(int gameID, String authToken, ServerMessage notification) throws IOException {
         //broadcast is send to all
         var removeList = new ArrayList<Connection>();
         List<Connection> connectionList = connections.get(gameID);
@@ -57,17 +57,17 @@ public class ConnectionManager {
         }
 
         for (var connection : removeList) {
-            removePlayer(gameID, connection.username);
+            removePlayer(gameID, connection.authToken);
         }
     }
 
-    public void send_user(int gameID, String excludeUsername, ServerMessage notification) throws IOException {
+    public void send_user(int gameID, String authToken, ServerMessage notification) throws IOException {
         //broadcast is send to all
         var removeList = new ArrayList<Connection>();
         List<Connection> connectionList = connections.get(gameID);
         for (var connection : connectionList) {
             if (connection.session.isOpen()) {
-                if (connection.username.equals(excludeUsername)) {
+                if (connection.authToken.equals(authToken)) {
                     connection.send(notification);
                 }
             } else {
@@ -76,7 +76,7 @@ public class ConnectionManager {
         }
 
         for (var connection : removeList) {
-            removePlayer(gameID, connection.username);
+            removePlayer(gameID, connection.authToken);
         }
     }
 }

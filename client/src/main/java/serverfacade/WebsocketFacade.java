@@ -3,6 +3,9 @@ package serverfacade;
 import com.google.gson.Gson;
 import ui.Repl;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import javax.websocket.*;
@@ -33,6 +36,24 @@ public class WebsocketFacade {
                 @Override
                 public void onMessage(String message) {
                     ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+                    switch (serverMessage.getServerMessageType()) {
+                        case LOAD_GAME -> {
+                            LoadGameMessage loadGameMessage = new Gson().fromJson(message, LoadGameMessage.class);
+                            // Function to handle this type of message
+                        }
+                        case NOTIFICATION -> {
+                            NotificationMessage notificationMessage = new Gson().fromJson(message, NotificationMessage.class);
+                            // Function to handle this type of message (Print this probably)
+                        }
+                        case ERROR -> {
+                            ErrorMessage errorMessage = new Gson().fromJson(message, ErrorMessage.class);
+                            // Function to handle this type of message
+                        }
+                        default -> {
+                            // Handle unexpected types or provide a default case
+                            System.out.println("Unhandled message type: " + serverMessage.getServerMessageType());
+                        }
+                    }
                     repl.notify(serverMessage);
                 }
             });

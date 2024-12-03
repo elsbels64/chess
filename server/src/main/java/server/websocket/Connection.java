@@ -7,18 +7,16 @@ import websocket.messages.ServerMessage;
 import java.io.IOException;
 
 public class Connection {
-    public String username;
+    public String authToken;
     public Session session;
 
-
-
-    public Connection(String userName, Session session) {
-        this.username = userName;
+    public Connection(String authToken, Session session) {
+        this.authToken = authToken;
         this.session = session;
     }
 
-    public String getUsername() {
-        return username;
+    public String getAuthtoken() {
+        return authToken;
     }
 
     public void send(ServerMessage msg) throws IOException {

@@ -9,7 +9,9 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ErrorMessage;
 import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
@@ -37,17 +39,21 @@ public class WebSocketHandler {
         }
     }
 
-    private void connect(String authString, Session session, Integer gameID) throws DataAccessException, UnauthorizedException, IOException, BadRequestException {
-        AuthData authData = authDataAccess.getAuthData(authString);
+    private void connect(String authToken, Session session, Integer gameID) throws DataAccessException, UnauthorizedException, IOException, BadRequestException {
+        var connection = new Connection(authToken, session);
+        AuthData authData = authDataAccess.getAuthData(authToken);
+        //how do I send back error messages if my connections requires the username?
         if(authData==null){
-            throw new UnauthorizedException("You do not have the correct authdata");
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "you are not authorized to connect. Please properly login");
+            connection.send(errorNotification); // should I add a username to the
         }
         GameData gameData = gameDataAccess.getGame(gameID);
         if(gameData == null){
-            throw new BadRequestException("that game does not exit");
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "that game doesn't exist in our system");
+            connection.send(errorNotification);
         }
         //how can I find out what game ID they are trying to join
-        connections.add(gameID, authData.username(), session);
+        connections.add(gameID, connection);
         String message;
         //find a way to figure out if the person is connecting to observe or to play and what color they are playing as
 
@@ -58,11 +64,11 @@ public class WebSocketHandler {
         }else{
             message = String.format("%s joined the game (as an observer)", authData.username());
         }
-        var notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        connections.send_not_user(gameID, authData.username(), notification);
+        var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        connections.send_not_user(gameID, authToken, notification);
         Gson g = new Gson();
-        notification = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, "message", gameData.game());
-        connections.send_user(gameID, authData.username(), notification);
+        var userNotification = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameData.game());
+        connections.send_user(gameID, authToken, userNotification);
     }
 
     private void leave(String authString) {
