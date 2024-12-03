@@ -2,6 +2,7 @@ package server;
 import dataaccess.*;
 import model.*;
 import model.Error;
+import server.websocket.WebSocketHandler;
 import spark.*;
 import com.google.gson.Gson;
 import service.Service;
@@ -16,6 +17,7 @@ public class Server {
     AuthDAO authDataAccess;
     GameDAO gameDataAccess;
     private final Service service;
+    private final WebSocketHandler webSocketHandler;
 
 
     public Server() {
@@ -28,6 +30,7 @@ public class Server {
         }
 
         this.service = new Service(userDataAccess, authDataAccess, gameDataAccess);
+        webSocketHandler = new WebSocketHandler(userDataAccess, authDataAccess, gameDataAccess);
     }
 
     public int run(int desiredPort) {
@@ -37,6 +40,7 @@ public class Server {
 
         // Register your endpoints and handle exceptions here.
         //add websovkr handler first
+        Spark.webSocket("/ws", webSocketHandler);
         Spark.post("/user", this::createUser);
         Spark.post("/session", this::loginUser);
         Spark.delete("/db", this::clearAllData);

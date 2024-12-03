@@ -1,6 +1,9 @@
 package serverfacade;
 
 import com.google.gson.Gson;
+import ui.Repl;
+import websocket.commands.UserGameCommand;
+import websocket.messages.ServerMessage;
 
 import javax.websocket.*;
 import java.io.IOException;
@@ -12,6 +15,49 @@ public class websocketFacade {
     ///wslocal host stuff
     //have something that saves the session variable in the chessboard ui
     //create a websocket client and call the send method on it
+    Session session;
+    Repl repl;
 
+
+    public void webSocketFacade(String url, Repl repl) throws Exception {
+        try {
+            url = url.replace("http", "ws");
+            URI socketURI = new URI(url + "/ws");
+            this.repl = repl;
+
+            WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+            this.session = container.connectToServer(this, socketURI);
+
+            //set message handler
+            this.session.addMessageHandler(new MessageHandler.Whole<String>() {
+                @Override
+                public void onMessage(String message) {
+                    ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+                    repl.notify(serverMessage);
+                }
+            });
+        } catch (DeploymentException | IOException | URISyntaxException ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
+
+    public void enterPetShop(String authToken) throws Exception {
+        try {
+            var action = new UserGameCommand(authToken); //tells the server that someone just came in. action class is something that Prof wrote
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+        } catch (IOException ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
+
+    public void leavePetShop(String authToken) throws Exception {
+        try {
+            var action = new UserGameCommand(authToken);
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+            this.session.close();
+        } catch (IOException ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
 
 }

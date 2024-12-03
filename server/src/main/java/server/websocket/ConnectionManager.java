@@ -19,7 +19,7 @@ public class ConnectionManager {
         connections.remove(visitorName);
     }
 
-    public void broadcast(String excludeVisitorName, ServerMessage notification) throws IOException {
+    public void send_not_user(String excludeVisitorName, ServerMessage notification) throws IOException {
         //broadcast is send to all
         var removeList = new ArrayList<Connection>();
         for (var connection : connections.values()) {
@@ -35,6 +35,39 @@ public class ConnectionManager {
         //you need something along this line before you send any message beucase if you try to
         //send a message to someone that isn't there you will crash your whole program
         // Clean up any connections that were left open.
+        for (var connection : removeList) {
+            connections.remove(connection.visitorName);
+        }
+    }
+
+    public void send_everyone( ServerMessage notification) throws IOException {
+        //broadcast is send to all
+        var removeList = new ArrayList<Connection>();
+        for (var connection : connections.values()) {
+            if (connection.session.isOpen()) {
+                connection.send(notification.toString());
+            } else {
+                removeList.add(connection);
+            }
+        }
+
+        for (var connection : removeList) {
+            connections.remove(connection.visitorName);
+        }
+    }
+
+    public void send_user(String excludeVisitorName, ServerMessage notification) throws IOException {
+        var removeList = new ArrayList<Connection>();
+        for (var connection : connections.values()) {
+            if (connection.session.isOpen()) {
+                if (connection.visitorName.equals(excludeVisitorName)) {
+                    connection.send(notification.toString());
+                }
+            } else {
+                removeList.add(connection);
+            }
+        }
+
         for (var connection : removeList) {
             connections.remove(connection.visitorName);
         }

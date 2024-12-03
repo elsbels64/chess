@@ -2,6 +2,7 @@ package ui;
 
 import chess.ChessBoard;
 import serverfacade.ServerFacade;
+import websocket.messages.ServerMessage;
 
 import java.util.Scanner;
 
@@ -72,6 +73,11 @@ public class Repl {
             }
         }
         System.out.println();
+    }
+
+    public void notify(ServerMessage serverMessage) {
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + serverMessage.getServerMessageType());
+        printPrompt();
     }
 
     private void printPrompt() {
