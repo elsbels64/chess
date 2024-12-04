@@ -19,7 +19,6 @@ import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 
-import static java.lang.System.exit;
 @WebSocket
 public class WebSocketHandler {
     private final ConnectionManager connections = new ConnectionManager();
@@ -70,7 +69,6 @@ public class WebSocketHandler {
         }
         var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.send_not_user(gameID, authToken, notification);
-        Gson g = new Gson();
         var userNotification = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameData.game());
         connections.send_user(gameID, authToken, userNotification);
     }
@@ -81,33 +79,42 @@ public class WebSocketHandler {
         //how do I send back error messages if my connections requires the username?
         if(authData==null){
             ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "you are not authorized to connect. Please properly login");
-            connection.send(errorNotification); // should I add a username to the
+            connection.send(errorNotification);
+            return;
         }
         GameData gameData = gameDataAccess.getGame(gameID);
         if(gameData == null){
             ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "that game doesn't exist in our system");
             connection.send(errorNotification);
+            return;
         }
-        String playerColor = "";
+        ChessGame.TeamColor playerColor = null;
         if(authData.username().equals(gameData.whiteUsername())) {
-            playerColor = "WHITE";
+            playerColor = ChessGame.TeamColor.WHITE;
         }else if(authData.username().equals(gameData.blackUsername())){
-            playerColor = "BLACK";
+            playerColor = ChessGame.TeamColor.BLACK;
         }else{
             ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "You are not a player in this chess game");
             connection.send(errorNotification);
+            return;
         }
         if(!gameData.game().getTeamTurn().equals(playerColor)){
             ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "It is not your turn to play");
             connection.send(errorNotification);
+            return;
         }
         try {
             gameData.game().makeMove(move);
+            gameDataAccess.updateGame(gameData.game(), gameID);
         } catch (InvalidMoveException e) {
             ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, String.format("%s is not a valid move", move.toString()));
             connection.send(errorNotification);
+            return;
         }
-
+        var gameNotification = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameData.game());
+        connections.send_everyone(gameID, authToken, gameNotification);
+        var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s made move %s", authData.username(), move));
+        connections.send_not_user(gameID, authToken, notification);
     }
 
     private void leave(String authToken, Session session, Integer gameID) {
