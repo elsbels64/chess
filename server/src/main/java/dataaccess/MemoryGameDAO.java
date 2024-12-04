@@ -48,6 +48,16 @@ public class MemoryGameDAO implements GameDAO{
     }
 
     @Override
+    public void removeWhiteUsername(int gameID) throws DataAccessException {
+
+    }
+
+    @Override
+    public void removeBlackUsername(int gameID) throws DataAccessException {
+
+    }
+
+    @Override
     public void updateGame(ChessGame chessGame, int gameID) {
 
     }

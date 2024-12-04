@@ -3,6 +3,7 @@ package dataaccess;
 import chess.ChessGame;
 import model.GameData;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public interface GameDAO {
@@ -21,6 +22,10 @@ public interface GameDAO {
     void addWhiteUsername(String userName, int gameID) throws DataAccessException;
 
     void addBlackUsername(String userName, int gameID) throws DataAccessException;
+
+    void removeWhiteUsername(int gameID) throws DataAccessException;
+
+    void removeBlackUsername(int gameID) throws DataAccessException;
 
     void updateGame(ChessGame chessGame, int gameID) throws DataAccessException;
 

@@ -117,7 +117,36 @@ public class WebSocketHandler {
         connections.send_not_user(gameID, authToken, notification);
     }
 
-    private void leave(String authToken, Session session, Integer gameID) {
+    private void leave(String authToken, Session session, Integer gameID) throws DataAccessException, IOException {
+        var connection = new Connection(authToken, session);
+        AuthData authData = authDataAccess.getAuthData(authToken);
+        //how do I send back error messages if my connections requires the username?
+        if(authData==null){
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "you are not authorized to connect. Please properly login");
+            connection.send(errorNotification);
+            return;
+        }
+        GameData gameData = gameDataAccess.getGame(gameID);
+        if(gameData == null){
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "that game doesn't exist in our system");
+            connection.send(errorNotification);
+            return;
+        }
+        String message;
+        if(authData.username().equals(gameData.whiteUsername())) {
+            gameDataAccess.removeWhiteUsername(gameID);
+        }else if(authData.username().equals(gameData.blackUsername())){
+            gameDataAccess.removeBlackUsername(gameID);
+        }
+        try {
+            connections.removePlayer(gameID, authToken);
+            message = String.format("%s left the game", authData.username());
+            var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+            connections.send_not_user(gameID, authToken, notification);
+        }catch(DataAccessException ex){
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, ex.getMessage());
+            connection.send(errorNotification);
+        }
     }
 
     private void resign(String authToken, Session session, Integer gameID) {

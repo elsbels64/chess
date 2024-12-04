@@ -1,5 +1,6 @@
 package server.websocket;
 
+import dataaccess.DataAccessException;
 import org.eclipse.jetty.websocket.api.Session;
 import websocket.messages.ServerMessage;
 
@@ -18,14 +19,16 @@ public class ConnectionManager {
         connections.computeIfAbsent(gameID, k -> new CopyOnWriteArrayList<>()).add(connection);
     }
 
-    public void removePlayer(int gameID, String authToken) {
+    public void removePlayer(int gameID, String authToken) throws DataAccessException {
         List<Connection> connectionList = connections.get(gameID); // Get the list for the gameID
         if (connectionList != null) { // Check if the list exists
             connectionList.removeIf(connection -> connection.authToken.equals(authToken)); // Remove by username
+        }else{
+            throw new DataAccessException("There is nobody officially in this game");
         }
     }
 
-    public void send_not_user(int gameID, String excludeAuthToken, ServerMessage notification) throws IOException {
+    public void send_not_user(int gameID, String excludeAuthToken, ServerMessage notification) throws IOException, DataAccessException {
         //broadcast is send to all
         var removeList = new ArrayList<Connection>();
         List<Connection> connectionList = connections.get(gameID);
@@ -44,7 +47,7 @@ public class ConnectionManager {
         }
     }
 
-    public void send_everyone(int gameID, String authToken, ServerMessage notification) throws IOException {
+    public void send_everyone(int gameID, String authToken, ServerMessage notification) throws IOException, DataAccessException {
         //broadcast is send to all
         var removeList = new ArrayList<Connection>();
         List<Connection> connectionList = connections.get(gameID);
@@ -61,7 +64,7 @@ public class ConnectionManager {
         }
     }
 
-    public void send_user(int gameID, String authToken, ServerMessage notification) throws IOException {
+    public void send_user(int gameID, String authToken, ServerMessage notification) throws IOException, DataAccessException {
         //broadcast is send to all
         var removeList = new ArrayList<Connection>();
         List<Connection> connectionList = connections.get(gameID);

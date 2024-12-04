@@ -14,6 +14,7 @@ public class ChessGame {
 
     private TeamColor teamTurn;
     private ChessBoard board;
+    private Boolean active = true;
 
 
     @Override
@@ -53,6 +54,14 @@ public class ChessGame {
      */
     public void setTeamTurn(TeamColor team) {
         teamTurn = team;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
+    }
+
+    public Boolean getActive() {
+        return active;
     }
 
     /**
