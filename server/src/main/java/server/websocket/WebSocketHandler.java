@@ -88,6 +88,11 @@ public class WebSocketHandler {
             connection.send(errorNotification);
             return;
         }
+        if(gameData.game().getActive()==false){
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "this game is no longer active.");
+            connection.send(errorNotification);
+            return;
+        }
         ChessGame.TeamColor playerColor = null;
         if(authData.username().equals(gameData.whiteUsername())) {
             playerColor = ChessGame.TeamColor.WHITE;
@@ -115,6 +120,15 @@ public class WebSocketHandler {
         connections.send_everyone(gameID, authToken, gameNotification);
         var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s made move %s", authData.username(), move));
         connections.send_not_user(gameID, authToken, notification);
+        if(gameData.game().isInCheck(ChessGame.TeamColor.WHITE)){
+            endGame(authToken,session,gameID,String.format("%s won the game", gameData.blackUsername()));
+        }
+        if(gameData.game().isInCheck(ChessGame.TeamColor.BLACK)){
+            endGame(authToken,session,gameID,String.format("%s won the game", gameData.whiteUsername()));
+        }
+        if(gameData.game().isInStalemate(ChessGame.TeamColor.WHITE)){
+            endGame(authToken,session,gameID,String.format("%s is in stalemate", gameData.whiteUsername()));
+        }
     }
 
     private void leave(String authToken, Session session, Integer gameID) throws DataAccessException, IOException {
@@ -149,6 +163,56 @@ public class WebSocketHandler {
         }
     }
 
-    private void resign(String authToken, Session session, Integer gameID) {
+    private void resign(String authToken, Session session, Integer gameID) throws IOException, DataAccessException {
+        var connection = new Connection(authToken, session);
+        AuthData authData = authDataAccess.getAuthData(authToken);
+        //how do I send back error messages if my connections requires the username?
+        if(authData==null){
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "you are not authorized to connect. Please properly login");
+            connection.send(errorNotification);
+            return;
+        }
+
+        endGame(authToken,session,gameID, String.format("%s resigned", authData.username()));
+    }
+
+    private void endGame(String authToken, Session session, Integer gameID, String message) throws DataAccessException, IOException {
+        var connection = new Connection(authToken, session);
+        AuthData authData = authDataAccess.getAuthData(authToken);
+        //how do I send back error messages if my connections requires the username?
+        if(authData==null){
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "you are not authorized to connect. Please properly login");
+            connection.send(errorNotification);
+            return;
+        }
+
+        GameData gameData = gameDataAccess.getGame(gameID);
+        if(gameData == null){
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "that game doesn't exist in our system");
+            connection.send(errorNotification);
+            return;
+        }
+        if(gameData.game().getActive()==false){
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "this game is no longer active and so no one can resign.");
+            connection.send(errorNotification);
+            return;
+        }
+        ChessGame.TeamColor playerColor = null;
+        if(authData.username().equals(gameData.whiteUsername())) {
+            playerColor = ChessGame.TeamColor.WHITE;
+        }else if(authData.username().equals(gameData.blackUsername())){
+            playerColor = ChessGame.TeamColor.BLACK;
+        }else{
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "You are not a player in this chess game and so you cannot resign");
+            connection.send(errorNotification);
+            return;
+        }
+
+        gameData.game().setActive(Boolean.FALSE);
+        gameDataAccess.updateGame(gameData.game(), gameID);
+
+        message = String.format("%s %s", authData.username(), message);
+        var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        connections.send_everyone(gameID, authToken, notification);
     }
 }
