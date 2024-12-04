@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -33,7 +35,15 @@ public class ChessPosition {
 
     @Override
     public String toString() {
-        return "[" + row +
+        List<String> letters = new ArrayList<>(8);
+        letters.add("a");
+        letters.add("b");
+        letters.add("c");
+        letters.add("d");
+        letters.add("e");
+        letters.add("f");
+        letters.add("g");
+        return "[" + letters.get(row) +
                 ", " + col +
                 ']';
     }

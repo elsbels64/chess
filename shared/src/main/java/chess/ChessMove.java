@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -44,10 +46,10 @@ public class ChessMove {
 
     @Override
     public String toString() {
-        return "ChessMove{" + startPosition +
-                " to " + endPosition +
-                ", promotionPiece=" + promotionPiece +
-                '}';
+        if(promotionPiece != null){
+            return String.format("%s: %s", startPosition.toString(), promotionPiece);
+        }
+        return String.format(startPosition.toString());
     }
 
     @Override
