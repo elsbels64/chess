@@ -44,8 +44,8 @@ public class ChessPosition {
         letters.add("f");
         letters.add("g");
         letters.add("h");
-        return "[" + letters.get(row-1) +
-                ", " + col +
+        return "[" + letters.get(col-1) +
+                ", " + row +
                 ']';
     }
 

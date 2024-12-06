@@ -165,7 +165,7 @@ public class WebSocketHandler {
             gameDataAccess.removeBlackUsername(gameID);
         }
         try {
-            connections.removePlayer(gameID, authToken);
+//            connections.removePlayer(gameID, authToken);
             message = String.format("%s left the game", authData.username());
             var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
             connections.send_not_user(gameID, authToken, notification);
@@ -222,8 +222,6 @@ public class WebSocketHandler {
 
         gameData.game().setActive(Boolean.FALSE);
         gameDataAccess.updateGame(gameData.game(), gameID);
-
-        message = String.format("%s %s", authData.username(), message);
         var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.send_everyone(gameID, authToken, notification);
     }

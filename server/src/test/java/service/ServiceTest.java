@@ -114,7 +114,7 @@ public class ServiceTest {
     }
 
     @Test
-    public void getGamesSuccesSimple() throws BadRequestException, AlreadyTakenException, UnauthorizedException, DataAccessException {
+    public void getGamesSuccessSimple() throws BadRequestException, AlreadyTakenException, UnauthorizedException, DataAccessException {
         var userData = new UserData("newUser", "Password", "newUser@email.com");
         var authData = service.registerUser(userData);
         var gameName = "New Game";

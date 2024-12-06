@@ -167,6 +167,6 @@ public class GameplayClient implements Client{
             }
             return highlight();
         }
-        return "";
+        return red + "Please enter a valid command\n"+help();
     }
 }
