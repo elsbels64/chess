@@ -4,10 +4,7 @@ import chess.*;
 import serverfacade.ServerFacade;
 import serverfacade.WebsocketFacade;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class GameplayClient implements Client{
     private final ServerFacade serverFacade;
@@ -111,6 +108,16 @@ public class GameplayClient implements Client{
 
     private String resign(String[] commandArray, String authToken) {
         try{
+            System.out.println("Are you sure you want to resign YES or NO");
+            Scanner scanner = new Scanner(System.in);
+            String line = scanner.nextLine();
+            if(line.equals("YES")){
+
+            }
+            else{
+                System.out.println("continue playing");
+                repl.printPrompt();
+            }
             websocketFacade.resign(authToken, repl.joinedGameID);
         } catch (Exception e) {
             return red + "Something went wrong on our end.";

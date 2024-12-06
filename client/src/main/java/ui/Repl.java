@@ -170,7 +170,7 @@ public class Repl {
     }
 
 
-    private void printPrompt() {
+    public void printPrompt() {
         String green = EscapeSequences.SET_TEXT_COLOR_GREEN;
         String reset = EscapeSequences.RESET_TEXT_COLOR;
         System.out.print("\n" + reset +">>> " + green);
