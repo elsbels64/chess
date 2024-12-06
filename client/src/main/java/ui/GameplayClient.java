@@ -45,7 +45,7 @@ public class GameplayClient implements Client{
         help += green + "leave";
         help += grey + "- exit the game. The game will still remain active" +
                 "\n if you are a player, any player can enter the game as the position you were playing\n";
-        help += green + "move <starting row letter><starting column number> <ending row letter><ending column number> <promotion piece type>";
+        help += green + "move <starting column letter><starting row number> <ending column letter><ending row number> <promotion piece type>";
         help += grey + "- moves piece located in the starting position to the ending position\n" +
                 "promotion piece type is only needed if the piece is a pawn that is about to be promoted\n" +
                 "promotion piece MUST be formated like so:\n" +
@@ -57,7 +57,7 @@ public class GameplayClient implements Client{
                 "        PAWN\n";
         help += green + "resign";
         help += grey + "- forfeight the game. You can still look at the board,\nbut you can no longer make moves.";
-        help += green + "highlight <piece position row letter><piece position column number>";
+        help += green + "\nhighlight <piece position column letter><piece position row number>";
         help += grey + "- highlights the legal moves of the piece at the position you provide\n";
         return help;
     }
@@ -118,8 +118,8 @@ public class GameplayClient implements Client{
     }
 
     private ChessPosition positionProcessor(String chessPositionStr){
-        int row = chessPositionStr.charAt(0) - 'a' + 1;
-        int col = Character.getNumericValue(chessPositionStr.charAt(1));
+        int col = chessPositionStr.charAt(0) - 'a' + 1;
+        int row = Character.getNumericValue(chessPositionStr.charAt(1));
         return new ChessPosition(row, col);
     }
 

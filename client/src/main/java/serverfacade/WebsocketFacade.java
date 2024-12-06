@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
-public class WebsocketFacade {
+public class WebsocketFacade extends Endpoint{
     //send a request to set up the connection with the server directly
     ///wslocal host stuff
     //have something that saves the session variable in the chessboard ui
@@ -45,6 +45,10 @@ public class WebsocketFacade {
         } catch (DeploymentException | IOException | URISyntaxException ex) {
             throw new Exception(ex.getMessage());
         }
+    }
+
+    @Override
+    public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
     public void connect(String authToken, int gameID) throws Exception {
