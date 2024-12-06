@@ -1,7 +1,6 @@
 package ui;
 
 import chess.*;
-import dataaccess.BadRequestException;
 import serverfacade.ServerFacade;
 import serverfacade.WebsocketFacade;
 
@@ -105,7 +104,7 @@ public class GameplayClient implements Client{
                 return red + "Something went wrong on our end.";
             }
             return "";
-        }catch(BadRequestException ex){
+        }catch(ArrayIndexOutOfBoundsException ex){
             return ex.getMessage();
         }
     }
@@ -133,14 +132,14 @@ public class GameplayClient implements Client{
             }else{
                 return red + "You currently are not in a chessGame";
             }
-        }catch(BadRequestException ex){
+        }catch(ArrayIndexOutOfBoundsException ex){
             return ex.getMessage();
         }
     }
 
-    private ChessPosition positionProcessor(String chessPositionStr) throws BadRequestException {
+    private ChessPosition positionProcessor(String chessPositionStr) throws ArrayIndexOutOfBoundsException {
         if(chessPositionStr.length()!=2){
-            throw new BadRequestException( red + "please ONLY enter a lowercase character a-h and then a number 1-8");
+            throw new ArrayIndexOutOfBoundsException( red + "please ONLY enter a lowercase character a-h and then a number 1-8");
         }
         List<Character> charList = new ArrayList<>();
         // Add characters to the list
@@ -159,7 +158,7 @@ public class GameplayClient implements Client{
             int row = Character.getNumericValue(chessPositionStr.charAt(1));
             return new ChessPosition(row, col);
         }else{
-            throw new BadRequestException( red + "please enter a lowercase character a-h and then a number 1-8");
+            throw new ArrayIndexOutOfBoundsException( red + "please enter a lowercase character a-h and then a number 1-8");
         }
     }
 
