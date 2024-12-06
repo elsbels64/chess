@@ -49,7 +49,7 @@ public class ChessMove {
         if(promotionPiece != null){
             return String.format("%s to %s: %s", startPosition.toString(), endPosition.toString(), promotionPiece);
         }
-        return String.format(startPosition.toString());
+        return String.format("%s to %s", startPosition.toString(), endPosition.toString());
     }
 
     @Override

@@ -84,13 +84,17 @@ public class PostloginClient implements Client{
         StringBuilder gamesStr = new StringBuilder();
         gameIDs = new ArrayList<>();
         chessGamesList = new ArrayList<>();
+        int terminalNumber = 1;
         for(int i=0; i < gamesList.size(); i++){
             GameData game = gamesList.get(i);
-            gameIDs.add(game.gameID());
-            chessGamesList.add(game.game());
-            gamesStr.append((i + 1)).append(": ").append(game.gameName()).append("\n");
-            gamesStr.append("\tWHITE player: ").append(game.whiteUsername()).append("\n");
-            gamesStr.append("\tBLACK player: ").append(game.blackUsername()).append("\n");
+            if(game.game().getActive()){
+                gameIDs.add(game.gameID());
+                chessGamesList.add(game.game());
+                gamesStr.append(terminalNumber).append(": ").append(game.gameName()).append("\n");
+                gamesStr.append("\tWHITE player: ").append(game.whiteUsername()).append("\n");
+                gamesStr.append("\tBLACK player: ").append(game.blackUsername()).append("\n");
+                terminalNumber += 1;
+            }
         }
         return gamesStr.toString();
     }
