@@ -9,6 +9,7 @@ import websocket.messages.LoadGameMessage;
 import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
+import java.util.Objects;
 import java.util.Scanner;
 
 import static ui.State.*;
@@ -44,11 +45,6 @@ public class Repl {
         System.out.println("Welcome to 240 chess. Type Help to get started.");
         System.out.print(client.help());
 
-        var board = new ChessBoard();
-        board.resetBoard();
-        System.out.print(displayBoard.printGameBlack(board));
-        System.out.print(displayBoard.printGameWhite(board));
-
         Scanner scanner = new Scanner(System.in); // accepts input every enter
         var result = "";
         while (!result.equals("quit")) {
@@ -77,6 +73,7 @@ public class Repl {
                         joinedChessBoardStr = result;
                         System.out.print(result);
                     }else{
+                        System.out.print("not in game");
                         System.out.print(result);
                     }
                 }
@@ -128,14 +125,24 @@ public class Repl {
                     LoadGameMessage loadGameMessage = new Gson().fromJson(message, LoadGameMessage.class);
                     // Function to handle this type of message
                     joinedChessGame = loadGameMessage.getGame();
+                    if(joinedChessGame != null){
+                        if(Objects.equals(userColor, "BLACK")) {
+                            System.out.print(displayBoard.printGameBlack(joinedChessGame.getBoard()));
+                        }
+                        else{
+                            System.out.print(displayBoard.printGameWhite(joinedChessGame.getBoard()));
+                        }
+                    }
                 }
                 case NOTIFICATION -> {
                     NotificationMessage notificationMessage = new Gson().fromJson(message, NotificationMessage.class);
                     // Function to handle this type of message (Print this probably)
+                    System.out.print(notificationMessage.getMessage());
                 }
                 case ERROR -> {
                     ErrorMessage errorMessage = new Gson().fromJson(message, ErrorMessage.class);
                     // Function to handle this type of message
+                    System.out.print(errorMessage.getErrorMessage());
                 }
                 default -> {
                     // Handle unexpected types or provide a default case
@@ -144,8 +151,8 @@ public class Repl {
             }
         }catch(Exception ex) {
             System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + message);
-            printPrompt();
         }
+        printPrompt();
     }
 
     private void printPrompt() {

@@ -15,13 +15,14 @@ public class GameplayClient implements Client{
     private ChessGame chessGame = null;// I might change this to just a string of the board later
     private WebsocketFacade websocketFacade;
     private final String red = EscapeSequences.SET_TEXT_COLOR_RED;
+    private DisplayBoard displayBoard = new DisplayBoard();
 
     public GameplayClient(String serverUrl, Repl repl, ServerFacade serverFacade) throws Exception {
         this.serverUrl = serverUrl;
         this.repl = repl;
         this.serverFacade = serverFacade;
-        websocketFacade = new WebsocketFacade(serverUrl, repl);
         try {
+            websocketFacade = new WebsocketFacade(serverUrl, repl);
             websocketFacade.connect(repl.getAuthToken(), repl.joinedGameID);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -63,13 +64,21 @@ public class GameplayClient implements Client{
 
     private String redraw() {
         if(repl.joinedChessGame != null){
-
-        } else{return red + "You currently are not in a chessGame");}
+            if(Objects.equals(repl.userColor, "BLACK")) {
+                return displayBoard.printGameBlack(repl.joinedChessGame.getBoard());
+            }
+            else{
+                return displayBoard.printGameWhite(repl.joinedChessGame.getBoard());
+            }
+        } else{
+            return red + "You currently are not in a chessGame";
+        }
     }
 
     private String leave(String[] commandArray, String authToken){
         try{
             websocketFacade.leave(authToken, repl.joinedGameID);
+            state = State.LOGGED_IN;
         } catch (Exception e) {
             return red + "Something went wrong on our end.";
         }

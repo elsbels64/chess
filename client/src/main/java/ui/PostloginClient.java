@@ -58,10 +58,6 @@ public class PostloginClient implements Client{
         return chessGamesList;
     }
 
-    private String quit(){
-        return "quit";
-    }
-
     private String logout(String authToken){
         String result = serverFacade.logoutUser(authToken);
         if(result.startsWith("failure: ")){
@@ -114,8 +110,8 @@ public class PostloginClient implements Client{
                 //            makes it possible for the repl to switch to the gameplay client
 
                 joinedGameID = gameID;
-                return displayBoard.printGameBlack(game.getBoard()) + "\n\n\n"
-                        + displayBoard.printGameWhite(game.getBoard());
+                state = State.IN_GAME;
+                return "successfully joined game #" + commandArray[1];
             }catch(NumberFormatException ex){
                 return red + "gameID needs to be an integer\n" + commandArray[1] + " is not an integer"+
                         "\nCall list games to see the available game numbers\n" +
@@ -134,8 +130,8 @@ public class PostloginClient implements Client{
             ChessGame game = chessGamesList.get(gameIDInteger);
 //            state = State.IN_GAME; // this switches the state to IN_GAME which makes it possible for the repl to switch to the gameplay client
             joinedGameID = gameID;
-            return "observing game #" + commandArray[1] + "\n" + displayBoard.printGameBlack(game.getBoard()) +
-                    "\n\n\n" + displayBoard.printGameWhite(game.getBoard());
+            state = State.IN_GAME;
+            return "successfully observing game #" + commandArray[1];
             }catch(NumberFormatException ex){
                 return red + "gameID needs to be an integer\n" + commandArray[1] + " is not an integer"+
                         "\nCall list games to see the available game numbers\n" +
@@ -152,7 +148,7 @@ public class PostloginClient implements Client{
         String[] commandArray = line.split("\\s+");
 
         if(commandArray[0].equals("quit")){
-            return quit();
+            return red + "you must logout before you can quit" + help();
         }
         else if(commandArray[0].equals("help")){
             return help();
