@@ -43,7 +43,8 @@ public class ChessPosition {
         letters.add("e");
         letters.add("f");
         letters.add("g");
-        return "[" + letters.get(row) +
+        letters.add("h");
+        return "[" + letters.get(row-1) +
                 ", " + col +
                 ']';
     }

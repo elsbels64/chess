@@ -112,6 +112,7 @@ public class PostloginClient implements Client{
                 ChessGame game = chessGamesList.get(gameIDInteger);
 //                state = State.IN_GAME; // this switches the state to IN_GAME which
                 //            makes it possible for the repl to switch to the gameplay client
+
                 joinedGameID = gameID;
                 return displayBoard.printGameBlack(game.getBoard()) + "\n\n\n"
                         + displayBoard.printGameWhite(game.getBoard());

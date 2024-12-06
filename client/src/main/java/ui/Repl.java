@@ -1,8 +1,12 @@
 package ui;
 
 import chess.ChessBoard;
+import chess.ChessGame;
 import com.google.gson.Gson;
 import serverfacade.ServerFacade;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
 
 import java.util.Scanner;
@@ -16,7 +20,8 @@ public class Repl {
     private Client client;
     private String authToken;
     ServerFacade serverFacade;
-    String joinedChessGame;
+    ChessGame joinedChessGame;
+    String joinedChessBoardStr = null;
     String userColor;
     Integer joinedGameID;
     DisplayBoard displayBoard = new DisplayBoard();
@@ -69,7 +74,7 @@ public class Repl {
                         joinedGameID = postloginClient.joinedGameID;
                         client = new GameplayClient(serverUrl, this, serverFacade);
                         System.out.print(client.help());
-                        joinedChessGame = result;
+                        joinedChessBoardStr = result;
                         System.out.print(result);
                     }else{
                         System.out.print(result);
@@ -81,7 +86,7 @@ public class Repl {
                         joinedGameID = postloginClient.joinedGameID;
                         client = new GameplayClient(serverUrl, this, serverFacade);
                         System.out.print(client.help());
-                        joinedChessGame = result;
+                        joinedChessBoardStr = result;
                         System.out.print(result);
                     }else{
                         System.out.print(result);
@@ -115,9 +120,32 @@ public class Repl {
         System.out.println();
     }
 
-    public void notify(ServerMessage serverMessage) {
-        System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + serverMessage.getServerMessageType());
-        printPrompt();
+    public void notify(String message) {
+        try {
+            ServerMessage serverMessage = new Gson().fromJson(message, ServerMessage.class);
+            switch (serverMessage.getServerMessageType()) {
+                case LOAD_GAME -> {
+                    LoadGameMessage loadGameMessage = new Gson().fromJson(message, LoadGameMessage.class);
+                    // Function to handle this type of message
+                    joinedChessGame = loadGameMessage.getGame();
+                }
+                case NOTIFICATION -> {
+                    NotificationMessage notificationMessage = new Gson().fromJson(message, NotificationMessage.class);
+                    // Function to handle this type of message (Print this probably)
+                }
+                case ERROR -> {
+                    ErrorMessage errorMessage = new Gson().fromJson(message, ErrorMessage.class);
+                    // Function to handle this type of message
+                }
+                default -> {
+                    // Handle unexpected types or provide a default case
+                    System.out.println("Unhandled message type: " + serverMessage.getServerMessageType());
+                }
+            }
+        }catch(Exception ex) {
+            System.out.println(EscapeSequences.SET_TEXT_COLOR_RED + message);
+            printPrompt();
+        }
     }
 
     private void printPrompt() {

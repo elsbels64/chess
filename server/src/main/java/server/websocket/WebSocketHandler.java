@@ -111,6 +111,7 @@ public class WebSocketHandler {
         try {
             gameData.game().makeMove(move);
             gameDataAccess.updateGame(gameData.game(), gameID);
+            gameData = gameDataAccess.getGame(gameID);
         } catch (InvalidMoveException e) {
             ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, String.format("%s is not a valid move", move.toString()));
             connection.send(errorNotification);
@@ -120,14 +121,25 @@ public class WebSocketHandler {
         connections.send_everyone(gameID, authToken, gameNotification);
         var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s made move %s", authData.username(), move));
         connections.send_not_user(gameID, authToken, notification);
-        if(gameData.game().isInCheck(ChessGame.TeamColor.WHITE)){
+        if(gameData.game().isInCheckmate(ChessGame.TeamColor.WHITE)){
             endGame(authToken,session,gameID,String.format("%s won the game", gameData.blackUsername()));
+            return;
         }
-        if(gameData.game().isInCheck(ChessGame.TeamColor.BLACK)){
+        if(gameData.game().isInCheckmate(ChessGame.TeamColor.BLACK)){
             endGame(authToken,session,gameID,String.format("%s won the game", gameData.whiteUsername()));
+            return;
         }
         if(gameData.game().isInStalemate(ChessGame.TeamColor.WHITE)){
             endGame(authToken,session,gameID,String.format("%s is in stalemate", gameData.whiteUsername()));
+            return;
+        }
+        if(gameData.game().isInCheck(ChessGame.TeamColor.WHITE)) {
+            notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s is in check", gameData.whiteUsername()));
+            connections.send_everyone(gameID, authToken, notification);
+        }
+        if(gameData.game().isInCheck(ChessGame.TeamColor.BLACK)) {
+            notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s is in check", gameData.blackUsername()));
+            connections.send_everyone(gameID, authToken, notification);
         }
     }
 
