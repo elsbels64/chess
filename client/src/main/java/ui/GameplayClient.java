@@ -4,15 +4,14 @@ import chess.*;
 import serverfacade.ServerFacade;
 import serverfacade.WebsocketFacade;
 
+import java.util.Collection;
 import java.util.Objects;
 
 public class GameplayClient implements Client{
     private final ServerFacade serverFacade;
-    private String visitorName = null;
     private final String serverUrl;
     private final Repl repl;
     private State state = State.LOGGED_IN;
-    private ChessGame chessGame = null;// I might change this to just a string of the board later
     private WebsocketFacade websocketFacade;
     private final String red = EscapeSequences.SET_TEXT_COLOR_RED;
     private DisplayBoard displayBoard = new DisplayBoard();
@@ -113,8 +112,19 @@ public class GameplayClient implements Client{
         return "";
     }
 
-    private String highlight() {
-        return "";
+    private String highlight(String[] commandArray, String authToken) {
+        ChessPosition position = positionProcessor(commandArray[1]);
+        Collection<ChessMove> chessMoves = repl.joinedChessGame.validMoves(position);
+        if(repl.joinedChessGame != null){
+            if(Objects.equals(repl.userColor, "BLACK")) {
+                return displayBoard.printValidMovesBlack(repl.joinedChessGame.getBoard(), chessMoves);
+            }
+            else{
+                return displayBoard.printValidMovesWhite(repl.joinedChessGame.getBoard(), chessMoves);
+            }
+        }else{
+            return red + "You currently are not in a chessGame";
+        }
     }
 
     private ChessPosition positionProcessor(String chessPositionStr){
@@ -165,7 +175,7 @@ public class GameplayClient implements Client{
             if (commandArray.length < 2) {
                 return red + "not enough arguments\nhere are the allowed commands\n" + help();
             }
-            return highlight();
+            return highlight(commandArray, repl.getAuthToken());
         }
         return red + "Please enter a valid command\n"+help();
     }
