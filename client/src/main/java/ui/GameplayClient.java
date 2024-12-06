@@ -1,10 +1,13 @@
 package ui;
 
 import chess.*;
+import dataaccess.BadRequestException;
 import serverfacade.ServerFacade;
 import serverfacade.WebsocketFacade;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 public class GameplayClient implements Client{
@@ -85,22 +88,26 @@ public class GameplayClient implements Client{
     }
 
     private String makeMove(String[] commandArray, String authToken) {
-        ChessPosition startPosition = positionProcessor(commandArray[1]);
-        ChessPosition endPosition = positionProcessor(commandArray[2]);
-        ChessPiece.PieceType promotionPiece = null;
-        if(commandArray.length == 4){
-            try{
-                promotionPiece = ChessPiece.PieceType.valueOf(commandArray[3]);
-            } catch (Exception e) {
-                return red + "your promotion piece was not in the valid formatting";
+        try {
+            ChessPosition startPosition = positionProcessor(commandArray[1]);
+            ChessPosition endPosition = positionProcessor(commandArray[2]);
+            ChessPiece.PieceType promotionPiece = null;
+            if (commandArray.length == 4) {
+                try {
+                    promotionPiece = ChessPiece.PieceType.valueOf(commandArray[3]);
+                } catch (Exception e) {
+                    return red + "your promotion piece was not in the valid formatting";
+                }
             }
+            try {
+                websocketFacade.makeMove(authToken, repl.joinedGameID, new ChessMove(startPosition, endPosition, promotionPiece));
+            } catch (Exception e) {
+                return red + "Something went wrong on our end.";
+            }
+            return "";
+        }catch(BadRequestException ex){
+            return ex.getMessage();
         }
-        try{
-            websocketFacade.makeMove(authToken, repl.joinedGameID, new ChessMove(startPosition, endPosition, promotionPiece));
-        }catch (Exception e) {
-            return red + "Something went wrong on our end.";
-        }
-        return "";
     }
 
     private String resign(String[] commandArray, String authToken) {
@@ -113,24 +120,47 @@ public class GameplayClient implements Client{
     }
 
     private String highlight(String[] commandArray, String authToken) {
-        ChessPosition position = positionProcessor(commandArray[1]);
-        Collection<ChessMove> chessMoves = repl.joinedChessGame.validMoves(position);
-        if(repl.joinedChessGame != null){
-            if(Objects.equals(repl.userColor, "BLACK")) {
-                return displayBoard.printValidMovesBlack(repl.joinedChessGame.getBoard(), chessMoves);
+        try {
+            ChessPosition position = positionProcessor(commandArray[1]);
+            Collection<ChessMove> chessMoves = repl.joinedChessGame.validMoves(position);
+            if(repl.joinedChessGame != null){
+                if(Objects.equals(repl.userColor, "BLACK")) {
+                    return displayBoard.printValidMovesBlack(repl.joinedChessGame.getBoard(), chessMoves);
+                }
+                else{
+                    return displayBoard.printValidMovesWhite(repl.joinedChessGame.getBoard(), chessMoves);
+                }
+            }else{
+                return red + "You currently are not in a chessGame";
             }
-            else{
-                return displayBoard.printValidMovesWhite(repl.joinedChessGame.getBoard(), chessMoves);
-            }
-        }else{
-            return red + "You currently are not in a chessGame";
+        }catch(BadRequestException ex){
+            return ex.getMessage();
         }
     }
 
-    private ChessPosition positionProcessor(String chessPositionStr){
-        int col = chessPositionStr.charAt(0) - 'a' + 1;
-        int row = Character.getNumericValue(chessPositionStr.charAt(1));
-        return new ChessPosition(row, col);
+    private ChessPosition positionProcessor(String chessPositionStr) throws BadRequestException {
+        if(chessPositionStr.length()!=2){
+            throw new BadRequestException( red + "please ONLY enter a lowercase character a-h and then a number 1-8");
+        }
+        List<Character> charList = new ArrayList<>();
+        // Add characters to the list
+        charList.add('a');
+        charList.add('b');
+        charList.add('c');
+        charList.add('d');
+        charList.add('e');
+        charList.add('f');
+        charList.add('g');
+        charList.add('h');
+        if((charList.contains(chessPositionStr.charAt(0))
+                && (0 < Character.getNumericValue(chessPositionStr.charAt(1)))
+                && (Character.getNumericValue(chessPositionStr.charAt(1)) < 9))) {
+            int col = chessPositionStr.charAt(0) - 'a' + 1;
+            int row = Character.getNumericValue(chessPositionStr.charAt(1));
+            return new ChessPosition(row, col);
+        }else{
+            throw new BadRequestException( red + "please enter a lowercase character a-h and then a number 1-8");
+        }
     }
 
     @Override
