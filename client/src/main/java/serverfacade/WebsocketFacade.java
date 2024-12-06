@@ -53,7 +53,7 @@ public class WebsocketFacade extends Endpoint{
 
     public void connect(String authToken, int gameID) throws Exception {
         try {
-            var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID); //tells the server that someone just came in. action class is something that Prof wrote
+            var command = new UserGameCommand(UserGameCommand.CommandType.CONNECT, authToken, gameID);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new Exception(ex.getMessage());
@@ -62,7 +62,7 @@ public class WebsocketFacade extends Endpoint{
 
     public void makeMove(String authToken, int gameID, ChessMove chessMove) throws Exception {
         try {
-            var command = new MakeMoveCommand(authToken, gameID, chessMove); //tells the server that someone just came in. action class is something that Prof wrote
+            var command = new MakeMoveCommand(authToken, gameID, chessMove);
             this.session.getBasicRemote().sendText(new Gson().toJson(command));
         } catch (IOException ex) {
             throw new Exception(ex.getMessage());

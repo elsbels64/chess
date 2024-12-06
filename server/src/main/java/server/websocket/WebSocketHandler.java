@@ -33,10 +33,12 @@ public class WebSocketHandler {
     }
 
     @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws IOException, UnauthorizedException, DataAccessException, BadRequestException {
+    public void onMessage(Session session, String message) throws IOException, UnauthorizedException,
+            DataAccessException, BadRequestException {
         UserGameCommand userGameCommand = new Gson().fromJson(message, UserGameCommand.class);
         switch (userGameCommand.getCommandType()) {
-            case CONNECT -> connect(userGameCommand.getAuthToken(), session, userGameCommand.getGameID()); //track the vistor's name. key your hashmap in your connection pool based on the user's name
+            case CONNECT -> connect(userGameCommand.getAuthToken(), session, userGameCommand.getGameID());
+            //track the vistor's name. key your hashmap in your connection pool based on the user's name
             case MAKE_MOVE ->{
                 MakeMoveCommand makeMoveCommand = new Gson().fromJson(message, MakeMoveCommand.class);
                 makeMove(userGameCommand.getAuthToken(), session, userGameCommand.getGameID(), makeMoveCommand.getMove());}
@@ -45,17 +47,20 @@ public class WebSocketHandler {
         }
     }
 
-    private void connect(String authToken, Session session, Integer gameID) throws DataAccessException, UnauthorizedException, IOException, BadRequestException {
+    private void connect(String authToken, Session session, Integer gameID) throws DataAccessException,
+            IOException {
         var connection = new Connection(authToken, session);
         AuthData authData = authDataAccess.getAuthData(authToken);
         //how do I send back error messages if my connections requires the username?
         if(authData==null){
-            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "you are not authorized to connect. Please properly login");
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR,
+                    "you are not authorized to connect. Please properly login");
             connection.send(errorNotification); // should I add a username to the
         }
         GameData gameData = gameDataAccess.getGame(gameID);
         if(gameData == null){
-            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "that game doesn't exist in our system");
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR,
+                    "that game doesn't exist in our system");
             connection.send(errorNotification);
         }
         connections.add(gameID, connection);
@@ -68,28 +73,32 @@ public class WebSocketHandler {
             message = String.format("%s joined the game (as an observer)", authData.username());
         }
         var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        connections.send_not_user(gameID, authToken, notification);
+        connections.sendNotUser(gameID, authToken, notification);
         var userNotification = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameData.game());
-        connections.send_user(gameID, authToken, userNotification);
+        connections.sendUser(gameID, authToken, userNotification);
     }
 
-    private void makeMove(String authToken, Session session, Integer gameID, ChessMove move) throws IOException, DataAccessException {
+    private void makeMove(String authToken, Session session, Integer gameID, ChessMove move) throws IOException,
+            DataAccessException {
         var connection = new Connection(authToken, session);
         AuthData authData = authDataAccess.getAuthData(authToken);
         //how do I send back error messages if my connections requires the username?
         if(authData==null){
-            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "you are not authorized to connect. Please properly login");
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR,
+                    "you are not authorized to connect. Please properly login");
             connection.send(errorNotification);
             return;
         }
         GameData gameData = gameDataAccess.getGame(gameID);
         if(gameData == null){
-            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "that game doesn't exist in our system");
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR,
+                    "that game doesn't exist in our system");
             connection.send(errorNotification);
             return;
         }
         if(gameData.game().getActive()==false){
-            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "this game is no longer active.");
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR,
+                    "this game is no longer active.");
             connection.send(errorNotification);
             return;
         }
@@ -99,12 +108,14 @@ public class WebSocketHandler {
         }else if(authData.username().equals(gameData.blackUsername())){
             playerColor = ChessGame.TeamColor.BLACK;
         }else{
-            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "You are not a player in this chess game");
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR,
+                    "You are not a player in this chess game");
             connection.send(errorNotification);
             return;
         }
         if(!gameData.game().getTeamTurn().equals(playerColor)){
-            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "It is not your turn to play");
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR,
+                    "It is not your turn to play");
             connection.send(errorNotification);
             return;
         }
@@ -113,14 +124,16 @@ public class WebSocketHandler {
             gameDataAccess.updateGame(gameData.game(), gameID);
             gameData = gameDataAccess.getGame(gameID);
         } catch (InvalidMoveException e) {
-            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, String.format("%s is not a valid move", move.toString()));
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, String.format(
+                    "%s is not a valid move", move.toString()));
             connection.send(errorNotification);
             return;
         }
         var gameNotification = new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameData.game());
-        connections.send_everyone(gameID, authToken, gameNotification);
-        var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s made move %s", authData.username(), move));
-        connections.send_not_user(gameID, authToken, notification);
+        connections.sendEveryone(gameID, authToken, gameNotification);
+        var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format
+                ("%s made move %s", authData.username(), move));
+        connections.sendNotUser(gameID, authToken, notification);
         if(gameData.game().isInCheckmate(ChessGame.TeamColor.WHITE)){
             endGame(authToken,session,gameID,String.format("%s won the game", gameData.blackUsername()));
             return;
@@ -134,12 +147,14 @@ public class WebSocketHandler {
             return;
         }
         if(gameData.game().isInCheck(ChessGame.TeamColor.WHITE)) {
-            notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s is in check", gameData.whiteUsername()));
-            connections.send_everyone(gameID, authToken, notification);
+            notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format
+                    ("%s is in check", gameData.whiteUsername()));
+            connections.sendEveryone(gameID, authToken, notification);
         }
         if(gameData.game().isInCheck(ChessGame.TeamColor.BLACK)) {
-            notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format("%s is in check", gameData.blackUsername()));
-            connections.send_everyone(gameID, authToken, notification);
+            notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, String.format
+                    ("%s is in check", gameData.blackUsername()));
+            connections.sendEveryone(gameID, authToken, notification);
         }
     }
 
@@ -148,13 +163,15 @@ public class WebSocketHandler {
         AuthData authData = authDataAccess.getAuthData(authToken);
         //how do I send back error messages if my connections requires the username?
         if(authData==null){
-            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "you are not authorized to connect. Please properly login");
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR,
+                    "you are not authorized to connect. Please properly login");
             connection.send(errorNotification);
             return;
         }
         GameData gameData = gameDataAccess.getGame(gameID);
         if(gameData == null){
-            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "that game doesn't exist in our system");
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR,
+                    "that game doesn't exist in our system");
             connection.send(errorNotification);
             return;
         }
@@ -168,7 +185,7 @@ public class WebSocketHandler {
 //            connections.removePlayer(gameID, authToken);
             message = String.format("%s left the game", authData.username());
             var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-            connections.send_not_user(gameID, authToken, notification);
+            connections.sendNotUser(gameID, authToken, notification);
         }catch(DataAccessException ex){
             ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, ex.getMessage());
             connection.send(errorNotification);
@@ -180,7 +197,8 @@ public class WebSocketHandler {
         AuthData authData = authDataAccess.getAuthData(authToken);
         //how do I send back error messages if my connections requires the username?
         if(authData==null){
-            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "you are not authorized to connect. Please properly login");
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR,
+                    "you are not authorized to connect. Please properly login");
             connection.send(errorNotification);
             return;
         }
@@ -193,19 +211,22 @@ public class WebSocketHandler {
         AuthData authData = authDataAccess.getAuthData(authToken);
         //how do I send back error messages if my connections requires the username?
         if(authData==null){
-            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "you are not authorized to connect. Please properly login");
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR,
+                    "you are not authorized to connect. Please properly login");
             connection.send(errorNotification);
             return;
         }
 
         GameData gameData = gameDataAccess.getGame(gameID);
         if(gameData == null){
-            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "that game doesn't exist in our system");
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR,
+                    "that game doesn't exist in our system");
             connection.send(errorNotification);
             return;
         }
         if(gameData.game().getActive()==false){
-            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "this game is no longer active and so no one can resign.");
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR,
+                    "this game is no longer active and so no one can resign.");
             connection.send(errorNotification);
             return;
         }
@@ -215,7 +236,8 @@ public class WebSocketHandler {
         }else if(authData.username().equals(gameData.blackUsername())){
             playerColor = ChessGame.TeamColor.BLACK;
         }else{
-            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "You are not a player in this chess game and so you cannot resign");
+            ErrorMessage errorNotification = new ErrorMessage(ServerMessage.ServerMessageType.ERROR,
+                    "You are not a player in this chess game and so you cannot resign");
             connection.send(errorNotification);
             return;
         }
@@ -223,6 +245,6 @@ public class WebSocketHandler {
         gameData.game().setActive(Boolean.FALSE);
         gameDataAccess.updateGame(gameData.game(), gameID);
         var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        connections.send_everyone(gameID, authToken, notification);
+        connections.sendEveryone(gameID, authToken, notification);
     }
 }

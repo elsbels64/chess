@@ -14,24 +14,6 @@ public class DisplayBoard {
             ChessPiece.PieceType.KING, " K "
     );
 
-//    private void setSpace(ChessBoard board, StringBuilder boardString, int row, int col) {
-//        List<String> backgroundColors = new ArrayList<>();
-//        backgroundColors.add(EscapeSequences.SET_BG_COLOR_LIGHT_BROWN);
-//        backgroundColors.add(EscapeSequences.SET_BG_COLOR_BROWN);
-//        boardString.append(backgroundColors.get((row+col+1)%2));
-//        if (board.getPiece(new ChessPosition(row, col)) == null) {
-//            boardString.append("   ");
-//        } else {
-//            String white = EscapeSequences.SET_TEXT_COLOR_WHITE;
-//            String black = EscapeSequences.SET_TEXT_COLOR_BLACK;
-//            String color = board.getPiece(new ChessPosition(row, col)).getTeamColor() == ChessGame.TeamColor.WHITE
-//                    ? white
-//                    : black;
-//            boardString.append(color);
-//            boardString.append(TYPE_TO_CHAR_MAP.get(board.getPiece(new ChessPosition(row, col)).getPieceType()));
-//        }
-//    }
-
     public String printGameBlack(ChessBoard board){
         StringBuilder boardString = new StringBuilder();
         boardString.append("\n");
@@ -132,10 +114,12 @@ public class DisplayBoard {
         backgroundValidMoveColors.add("\u001B[102m");
         backgroundValidMoveColors.add("\u001B[42m");
         boolean isHighlighted = false;
-        for (ChessMove move : validMoves) {
-            if (move.getEndPosition().equals(new ChessPosition(row, col))) {
-                isHighlighted = true;
-                break;
+        if(validMoves!=null) {
+            for (ChessMove move : validMoves) {
+                if (move.getEndPosition().equals(new ChessPosition(row, col))) {
+                    isHighlighted = true;
+                    break;
+                }
             }
         }
         if(isHighlighted) {

@@ -1,13 +1,11 @@
 package server.websocket;
 
 import dataaccess.DataAccessException;
-import org.eclipse.jetty.websocket.api.Session;
 import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -28,7 +26,7 @@ public class ConnectionManager {
         }
     }
 
-    public void send_not_user(int gameID, String excludeAuthToken, ServerMessage notification) throws IOException, DataAccessException {
+    public void sendNotUser(int gameID, String excludeAuthToken, ServerMessage notification) throws IOException, DataAccessException {
         //broadcast is send to all
         var removeList = new ArrayList<Connection>();
         List<Connection> connectionList = connections.get(gameID);
@@ -47,7 +45,7 @@ public class ConnectionManager {
         }
     }
 
-    public void send_everyone(int gameID, String authToken, ServerMessage notification) throws IOException, DataAccessException {
+    public void sendEveryone(int gameID, String authToken, ServerMessage notification) throws IOException, DataAccessException {
         //broadcast is send to all
         var removeList = new ArrayList<Connection>();
         List<Connection> connectionList = connections.get(gameID);
@@ -64,7 +62,7 @@ public class ConnectionManager {
         }
     }
 
-    public void send_user(int gameID, String authToken, ServerMessage notification) throws IOException, DataAccessException {
+    public void sendUser(int gameID, String authToken, ServerMessage notification) throws IOException, DataAccessException {
         //broadcast is send to all
         var removeList = new ArrayList<Connection>();
         List<Connection> connectionList = connections.get(gameID);
